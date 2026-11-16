@@ -1,0 +1,110 @@
+[
+  {
+    "image": "0402",
+    "variant": "square_padding_baseline",
+    "model": "cnn",
+    "prediction": "IILIIIIII",
+    "visible_manual_transcription": "65L100780",
+    "segments": 9,
+    "note": "Two diagnostic development examples, not an independent benchmark"
+  },
+  {
+    "image": "0402",
+    "variant": "square_padding_baseline",
+    "model": "svm",
+    "prediction": "11LTIII1I",
+    "visible_manual_transcription": "65L100780",
+    "segments": 9,
+    "note": "Two diagnostic development examples, not an independent benchmark"
+  },
+  {
+    "image": "0402",
+    "variant": "square_padding_baseline",
+    "model": "rf",
+    "prediction": "11I0III1I",
+    "visible_manual_transcription": "65L100780",
+    "segments": 9,
+    "note": "Two diagnostic development examples, not an independent benchmark"
+  },
+  {
+    "image": "0402",
+    "variant": "stretch_foreground",
+    "model": "cnn",
+    "prediction": "HHLILL7HL",
+    "visible_manual_transcription": "65L100780",
+    "segments": 9,
+    "note": "Two diagnostic development examples, not an independent benchmark"
+  },
+  {
+    "image": "0402",
+    "variant": "stretch_foreground",
+    "model": "svm",
+    "prediction": "E5LTTT7ET",
+    "visible_manual_transcription": "65L100780",
+    "segments": 9,
+    "note": "Two diagnostic development examples, not an independent benchmark"
+  },
+  {
+    "image": "0402",
+    "variant": "stretch_foreground",
+    "model": "rf",
+    "prediction": "E5LHLJFHL",
+    "visible_manual_transcription": "65L100780",
+    "segments": 9,
+    "note": "Two diagnostic development examples, not an independent benchmark"
+  },
+  {
+    "image": "0403",
+    "variant": "square_padding_baseline",
+    "model": "cnn",
+    "prediction": "IIIIIIIII",
+    "visible_manual_transcription": "83FD9972",
+    "segments": 9,
+    "note": "Two diagnostic development examples, not an independent benchmark"
+  },
+  {
+    "image": "0403",
+    "variant": "square_padding_baseline",
+    "model": "svm",
+    "prediction": "1JFI1JIII",
+    "visible_manual_transcription": "83FD9972",
+    "segments": 9,
+    "note": "Two diagnostic development examples, not an independent benchmark"
+  },
+  {
+    "image": "0403",
+    "variant": "square_padding_baseline",
+    "model": "rf",
+    "prediction": "111I11III",
+    "visible_manual_transcription": "83FD9972",
+    "segments": 9,
+    "note": "Two diagnostic development examples, not an independent benchmark"
+  },
+  {
+    "image": "0403",
+    "variant": "stretch_foreground",
+    "model": "cnn",
+    "prediction": "HBFLHH77I",
+    "visible_manual_transcription": "83FD9972",
+    "segments": 9,
+    "note": "Two diagnostic development examples, not an independent benchmark"
+  },
+  {
+    "image": "0403",
+    "variant": "stretch_foreground",
+    "model": "svm",
+    "prediction": "EHFTH4WFT",
+    "visible_manual_transcription": "83FD9972",
+    "segments": 9,
+    "note": "Two diagnostic development examples, not an independent benchmark"
+  },
+  {
+    "image": "0403",
+    "variant": "stretch_foreground",
+    "model": "rf",
+    "prediction": "HHFUH9WFE",
+    "visible_manual_transcription": "83FD9972",
+    "segments": 9,
+    "note": "Two diagnostic development examples, not an independent benchmark"
+  }
+]

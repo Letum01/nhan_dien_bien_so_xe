@@ -1,0 +1,15 @@
+{
+  "model": "cnn",
+  "samples": 0,
+  "plate_exact_match": null,
+  "cer": null,
+  "mean_cer": null,
+  "mean_seconds": null,
+  "total_reference_characters": 0,
+  "total_character_errors": 0,
+  "failed_samples": 0,
+  "ground_truth_source": "dataset\\evaluation_ground_truth_template.csv",
+  "results": [],
+  "skipped_unreviewed": 2,
+  "warning": "Only rows marked human_reviewed are included. Detector metrics require verified box annotations and are not inferred from this OCR-only report."
+}

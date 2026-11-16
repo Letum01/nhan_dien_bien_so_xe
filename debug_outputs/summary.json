@@ -1,0 +1,767 @@
+{
+  "results": [
+    {
+      "image": "dataset\\license_plate_dataset\\0\\images\\0402.jpg",
+      "proposal_count": 10,
+      "selected_box": [
+        478,
+        0,
+        122,
+        48
+      ],
+      "character_count": 9,
+      "raw_text": "IIIIHIIJW",
+      "processed_text": "IIIIHIIJW",
+      "status": "recognized",
+      "model": "cnn",
+      "characters": [
+        {
+          "index": 0,
+          "label": "I",
+          "bbox_in_crop": [
+            0,
+            0,
+            6,
+            15
+          ],
+          "confidence": 0.9790391325950623
+        },
+        {
+          "index": 1,
+          "label": "I",
+          "bbox_in_crop": [
+            17,
+            0,
+            5,
+            11
+          ],
+          "confidence": 0.9923378825187683
+        },
+        {
+          "index": 2,
+          "label": "I",
+          "bbox_in_crop": [
+            39,
+            0,
+            9,
+            15
+          ],
+          "confidence": 0.3922179341316223
+        },
+        {
+          "index": 3,
+          "label": "I",
+          "bbox_in_crop": [
+            49,
+            5,
+            7,
+            16
+          ],
+          "confidence": 0.9978815913200378
+        },
+        {
+          "index": 4,
+          "label": "H",
+          "bbox_in_crop": [
+            68,
+            0,
+            13,
+            13
+          ],
+          "confidence": 0.4826911389827728
+        },
+        {
+          "index": 5,
+          "label": "I",
+          "bbox_in_crop": [
+            0,
+            39,
+            4,
+            9
+          ],
+          "confidence": 0.6894158720970154
+        },
+        {
+          "index": 6,
+          "label": "I",
+          "bbox_in_crop": [
+            2,
+            22,
+            12,
+            26
+          ],
+          "confidence": 0.9955886602401733
+        },
+        {
+          "index": 7,
+          "label": "J",
+          "bbox_in_crop": [
+            12,
+            11,
+            34,
+            29
+          ],
+          "confidence": 0.3294162154197693
+        },
+        {
+          "index": 8,
+          "label": "W",
+          "bbox_in_crop": [
+            21,
+            42,
+            7,
+            6
+          ],
+          "confidence": 0.23857538402080536
+        }
+      ],
+      "selected_candidate": 3,
+      "candidate_score_heuristic": 0.5937436636490345,
+      "confidence": [
+        0.9790391325950623,
+        0.9923378825187683,
+        0.3922179341316223,
+        0.9978815913200378,
+        0.4826911389827728,
+        0.6894158720970154,
+        0.9955886602401733,
+        0.3294162154197693,
+        0.23857538402080536
+      ]
+    },
+    {
+      "image": "dataset\\license_plate_dataset\\0\\images\\0403.jpg",
+      "proposal_count": 10,
+      "selected_box": [
+        127,
+        181,
+        83,
+        29
+      ],
+      "character_count": 10,
+      "raw_text": "ILLTIMPIII",
+      "processed_text": "ILLTIMPIII",
+      "status": "recognized",
+      "model": "cnn",
+      "characters": [
+        {
+          "index": 0,
+          "label": "I",
+          "bbox_in_crop": [
+            0,
+            0,
+            5,
+            9
+          ],
+          "confidence": 0.92010897397995
+        },
+        {
+          "index": 1,
+          "label": "L",
+          "bbox_in_crop": [
+            13,
+            2,
+            6,
+            5
+          ],
+          "confidence": 0.4208773672580719
+        },
+        {
+          "index": 2,
+          "label": "L",
+          "bbox_in_crop": [
+            15,
+            9,
+            3,
+            4
+          ],
+          "confidence": 0.7554250359535217
+        },
+        {
+          "index": 3,
+          "label": "T",
+          "bbox_in_crop": [
+            20,
+            0,
+            9,
+            9
+          ],
+          "confidence": 0.25470608472824097
+        },
+        {
+          "index": 4,
+          "label": "I",
+          "bbox_in_crop": [
+            35,
+            0,
+            4,
+            4
+          ],
+          "confidence": 0.9021733403205872
+        },
+        {
+          "index": 5,
+          "label": "M",
+          "bbox_in_crop": [
+            44,
+            12,
+            5,
+            6
+          ],
+          "confidence": 0.3009754717350006
+        },
+        {
+          "index": 6,
+          "label": "P",
+          "bbox_in_crop": [
+            75,
+            3,
+            8,
+            12
+          ],
+          "confidence": 0.5785041451454163
+        },
+        {
+          "index": 7,
+          "label": "I",
+          "bbox_in_crop": [
+            0,
+            10,
+            14,
+            19
+          ],
+          "confidence": 0.2623205780982971
+        },
+        {
+          "index": 8,
+          "label": "I",
+          "bbox_in_crop": [
+            0,
+            20,
+            4,
+            5
+          ],
+          "confidence": 0.5685007572174072
+        },
+        {
+          "index": 9,
+          "label": "I",
+          "bbox_in_crop": [
+            58,
+            23,
+            5,
+            6
+          ],
+          "confidence": 0.23834338784217834
+        }
+      ],
+      "selected_candidate": 8,
+      "candidate_score_heuristic": 0.5521364275668073,
+      "confidence": [
+        0.92010897397995,
+        0.4208773672580719,
+        0.7554250359535217,
+        0.25470608472824097,
+        0.9021733403205872,
+        0.3009754717350006,
+        0.5785041451454163,
+        0.2623205780982971,
+        0.5685007572174072,
+        0.23834338784217834
+      ]
+    },
+    {
+      "image": "dataset\\license_plate_dataset\\0\\images\\0404.jpg",
+      "proposal_count": 10,
+      "selected_box": [
+        519,
+        8,
+        81,
+        28
+      ],
+      "character_count": 10,
+      "raw_text": "IIIIFPIIJI",
+      "processed_text": "IIIIFPIIJI",
+      "status": "recognized",
+      "model": "cnn",
+      "characters": [
+        {
+          "index": 0,
+          "label": "I",
+          "bbox_in_crop": [
+            27,
+            9,
+            4,
+            4
+          ],
+          "confidence": 0.38385793566703796
+        },
+        {
+          "index": 1,
+          "label": "I",
+          "bbox_in_crop": [
+            42,
+            12,
+            3,
+            4
+          ],
+          "confidence": 0.8998127579689026
+        },
+        {
+          "index": 2,
+          "label": "I",
+          "bbox_in_crop": [
+            50,
+            17,
+            4,
+            4
+          ],
+          "confidence": 0.2292936146259308
+        },
+        {
+          "index": 3,
+          "label": "I",
+          "bbox_in_crop": [
+            52,
+            3,
+            6,
+            6
+          ],
+          "confidence": 0.39324602484703064
+        },
+        {
+          "index": 4,
+          "label": "F",
+          "bbox_in_crop": [
+            60,
+            3,
+            6,
+            5
+          ],
+          "confidence": 0.8079929351806641
+        },
+        {
+          "index": 5,
+          "label": "P",
+          "bbox_in_crop": [
+            65,
+            7,
+            7,
+            8
+          ],
+          "confidence": 0.4710862338542938
+        },
+        {
+          "index": 6,
+          "label": "I",
+          "bbox_in_crop": [
+            71,
+            15,
+            3,
+            4
+          ],
+          "confidence": 0.6876820921897888
+        },
+        {
+          "index": 7,
+          "label": "I",
+          "bbox_in_crop": [
+            75,
+            6,
+            2,
+            4
+          ],
+          "confidence": 0.9934173822402954
+        },
+        {
+          "index": 8,
+          "label": "J",
+          "bbox_in_crop": [
+            76,
+            17,
+            4,
+            5
+          ],
+          "confidence": 0.8110629320144653
+        },
+        {
+          "index": 9,
+          "label": "I",
+          "bbox_in_crop": [
+            2,
+            19,
+            8,
+            9
+          ],
+          "confidence": 0.4201294183731079
+        }
+      ],
+      "selected_candidate": 2,
+      "candidate_score_heuristic": 0.5241023116592738,
+      "confidence": [
+        0.38385793566703796,
+        0.8998127579689026,
+        0.2292936146259308,
+        0.39324602484703064,
+        0.8079929351806641,
+        0.4710862338542938,
+        0.6876820921897888,
+        0.9934173822402954,
+        0.8110629320144653,
+        0.4201294183731079
+      ]
+    },
+    {
+      "image": "dataset\\license_plate_dataset\\0\\images\\0405.jpg",
+      "proposal_count": 10,
+      "selected_box": [
+        178,
+        153,
+        156,
+        47
+      ],
+      "character_count": 6,
+      "raw_text": "ITTIIT",
+      "processed_text": "ITTIIT",
+      "status": "recognized",
+      "model": "cnn",
+      "characters": [
+        {
+          "index": 0,
+          "label": "I",
+          "bbox_in_crop": [
+            0,
+            5,
+            4,
+            10
+          ],
+          "confidence": 0.995452880859375
+        },
+        {
+          "index": 1,
+          "label": "T",
+          "bbox_in_crop": [
+            42,
+            26,
+            17,
+            21
+          ],
+          "confidence": 0.453330397605896
+        },
+        {
+          "index": 2,
+          "label": "T",
+          "bbox_in_crop": [
+            64,
+            27,
+            18,
+            20
+          ],
+          "confidence": 0.3934408724308014
+        },
+        {
+          "index": 3,
+          "label": "I",
+          "bbox_in_crop": [
+            109,
+            28,
+            8,
+            19
+          ],
+          "confidence": 0.9975143671035767
+        },
+        {
+          "index": 4,
+          "label": "I",
+          "bbox_in_crop": [
+            121,
+            28,
+            7,
+            19
+          ],
+          "confidence": 0.9980887770652771
+        },
+        {
+          "index": 5,
+          "label": "T",
+          "bbox_in_crop": [
+            132,
+            29,
+            18,
+            18
+          ],
+          "confidence": 0.5543044805526733
+        }
+      ],
+      "selected_candidate": 1,
+      "candidate_score_heuristic": 0.6288526666201084,
+      "confidence": [
+        0.995452880859375,
+        0.453330397605896,
+        0.3934408724308014,
+        0.9975143671035767,
+        0.9980887770652771,
+        0.5543044805526733
+      ]
+    },
+    {
+      "image": "dataset\\license_plate_dataset\\0\\images\\0406.jpg",
+      "proposal_count": 10,
+      "selected_box": [
+        202,
+        200,
+        151,
+        111
+      ],
+      "character_count": 9,
+      "raw_text": "IIIIIIIII",
+      "processed_text": "IIIIIIIII",
+      "status": "recognized",
+      "model": "cnn",
+      "characters": [
+        {
+          "index": 0,
+          "label": "I",
+          "bbox_in_crop": [
+            26,
+            3,
+            19,
+            44
+          ],
+          "confidence": 0.9926462173461914
+        },
+        {
+          "index": 1,
+          "label": "I",
+          "bbox_in_crop": [
+            48,
+            0,
+            18,
+            49
+          ],
+          "confidence": 0.9937426447868347
+        },
+        {
+          "index": 2,
+          "label": "I",
+          "bbox_in_crop": [
+            92,
+            4,
+            21,
+            47
+          ],
+          "confidence": 0.899551272392273
+        },
+        {
+          "index": 3,
+          "label": "I",
+          "bbox_in_crop": [
+            116,
+            5,
+            16,
+            47
+          ],
+          "confidence": 0.9728156924247742
+        },
+        {
+          "index": 4,
+          "label": "I",
+          "bbox_in_crop": [
+            10,
+            54,
+            19,
+            43
+          ],
+          "confidence": 0.9739907383918762
+        },
+        {
+          "index": 5,
+          "label": "I",
+          "bbox_in_crop": [
+            38,
+            55,
+            17,
+            43
+          ],
+          "confidence": 0.993529736995697
+        },
+        {
+          "index": 6,
+          "label": "I",
+          "bbox_in_crop": [
+            64,
+            57,
+            20,
+            43
+          ],
+          "confidence": 0.9718957543373108
+        },
+        {
+          "index": 7,
+          "label": "I",
+          "bbox_in_crop": [
+            100,
+            59,
+            12,
+            43
+          ],
+          "confidence": 0.9853816032409668
+        },
+        {
+          "index": 8,
+          "label": "I",
+          "bbox_in_crop": [
+            125,
+            42,
+            26,
+            61
+          ],
+          "confidence": 0.9210007190704346
+        }
+      ],
+      "selected_candidate": 3,
+      "candidate_score_heuristic": 0.5662743197396662,
+      "confidence": [
+        0.9926462173461914,
+        0.9937426447868347,
+        0.899551272392273,
+        0.9728156924247742,
+        0.9739907383918762,
+        0.993529736995697,
+        0.9718957543373108,
+        0.9853816032409668,
+        0.9210007190704346
+      ]
+    },
+    {
+      "image": "dataset\\license_plate_dataset\\0\\images\\0407.jpg",
+      "proposal_count": 10,
+      "selected_box": [
+        390,
+        86,
+        37,
+        13
+      ],
+      "character_count": 9,
+      "raw_text": "ILIIIIIII",
+      "processed_text": "ILIIIIIII",
+      "status": "recognized",
+      "model": "cnn",
+      "characters": [
+        {
+          "index": 0,
+          "label": "I",
+          "bbox_in_crop": [
+            0,
+            2,
+            4,
+            10
+          ],
+          "confidence": 0.9925739765167236
+        },
+        {
+          "index": 1,
+          "label": "L",
+          "bbox_in_crop": [
+            6,
+            0,
+            7,
+            8
+          ],
+          "confidence": 0.9625586271286011
+        },
+        {
+          "index": 2,
+          "label": "I",
+          "bbox_in_crop": [
+            14,
+            3,
+            2,
+            6
+          ],
+          "confidence": 0.9996616840362549
+        },
+        {
+          "index": 3,
+          "label": "I",
+          "bbox_in_crop": [
+            17,
+            4,
+            2,
+            4
+          ],
+          "confidence": 0.9934173822402954
+        },
+        {
+          "index": 4,
+          "label": "I",
+          "bbox_in_crop": [
+            20,
+            6,
+            2,
+            2
+          ],
+          "confidence": 0.9513142108917236
+        },
+        {
+          "index": 5,
+          "label": "I",
+          "bbox_in_crop": [
+            24,
+            3,
+            2,
+            2
+          ],
+          "confidence": 0.9513142108917236
+        },
+        {
+          "index": 6,
+          "label": "I",
+          "bbox_in_crop": [
+            25,
+            7,
+            2,
+            2
+          ],
+          "confidence": 0.9513144493103027
+        },
+        {
+          "index": 7,
+          "label": "I",
+          "bbox_in_crop": [
+            27,
+            3,
+            2,
+            2
+          ],
+          "confidence": 0.9513144493103027
+        },
+        {
+          "index": 8,
+          "label": "I",
+          "bbox_in_crop": [
+            8,
+            9,
+            2,
+            2
+          ],
+          "confidence": 0.9513144493103027
+        }
+      ],
+      "selected_candidate": 2,
+      "candidate_score_heuristic": 0.607950752950753,
+      "confidence": [
+        0.9925739765167236,
+        0.9625586271286011,
+        0.9996616840362549,
+        0.9934173822402954,
+        0.9513142108917236,
+        0.9513142108917236,
+        0.9513144493103027,
+        0.9513144493103027,
+        0.9513144493103027
+      ]
+    }
+  ],
+  "ground_truth_used": false
+}

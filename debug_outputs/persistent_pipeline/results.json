@@ -1,0 +1,443 @@
+[
+  {
+    "image": "0402",
+    "text": "65L100780",
+    "box": [
+      208,
+      192,
+      145,
+      101
+    ],
+    "detection_selection_seconds": 0.043735899998864625,
+    "ocr": {
+      "backend": "paddle",
+      "raw_text": "65-L1\n007.80",
+      "text": "65L100780",
+      "status": "prediction",
+      "confidence": 0.8988466262817383,
+      "seconds": 8.604607599998417,
+      "error": null,
+      "tokens": [
+        {
+          "text": "65-L1",
+          "score": 0.8988466262817383,
+          "polygon": [
+            [
+              13.0,
+              1.0
+            ],
+            [
+              118.0,
+              1.0
+            ],
+            [
+              118.0,
+              52.0
+            ],
+            [
+              13.0,
+              52.0
+            ]
+          ],
+          "x": 13.0,
+          "y": 26.5,
+          "height": 51.0
+        },
+        {
+          "text": "007.80",
+          "score": 0.9958798289299011,
+          "polygon": [
+            [
+              0.0,
+              50.0
+            ],
+            [
+              143.0,
+              47.0
+            ],
+            [
+              143.0,
+              100.0
+            ],
+            [
+              0.0,
+              101.0
+            ]
+          ],
+          "x": 0.0,
+          "y": 74.5,
+          "height": 54.0
+        }
+      ],
+      "timings": {
+        "inference_seconds": 0.5358331000024918,
+        "worker_pid": 8256,
+        "decode_seconds": 0.0008795999965514056,
+        "cache_hit": false,
+        "cold_start_seconds": 8.065207999999984,
+        "request_seconds": 8.603183700004593,
+        "encode_seconds": 0.0014091999910306185
+      }
+    },
+    "total_pipeline_seconds": 8.649136699998053
+  },
+  {
+    "image": "0403",
+    "text": "83FD9972",
+    "box": [
+      209,
+      207,
+      177,
+      122
+    ],
+    "detection_selection_seconds": 0.031082499997864943,
+    "ocr": {
+      "backend": "paddle",
+      "raw_text": "83-FD\n9972",
+      "text": "83FD9972",
+      "status": "prediction",
+      "confidence": 0.9595012664794922,
+      "seconds": 0.4437625999999,
+      "error": null,
+      "tokens": [
+        {
+          "text": "83-FD",
+          "score": 0.9595012664794922,
+          "polygon": [
+            [
+              15.0,
+              5.0
+            ],
+            [
+              150.0,
+              0.0
+            ],
+            [
+              152.0,
+              63.0
+            ],
+            [
+              17.0,
+              68.0
+            ]
+          ],
+          "x": 15.0,
+          "y": 34.0,
+          "height": 68.0
+        },
+        {
+          "text": "9972",
+          "score": 0.9986699819564819,
+          "polygon": [
+            [
+              22.0,
+              59.0
+            ],
+            [
+              155.0,
+              59.0
+            ],
+            [
+              155.0,
+              115.0
+            ],
+            [
+              22.0,
+              115.0
+            ]
+          ],
+          "x": 22.0,
+          "y": 87.0,
+          "height": 56.0
+        }
+      ],
+      "timings": {
+        "inference_seconds": 0.44029779999982566,
+        "worker_pid": 8256,
+        "decode_seconds": 0.0008478000017930754,
+        "cache_hit": false,
+        "cold_start_seconds": 0.0,
+        "request_seconds": 0.4423363999958383,
+        "encode_seconds": 0.0014128000038908795
+      }
+    },
+    "total_pipeline_seconds": 0.4757973000014317
+  },
+  {
+    "image": "0404",
+    "text": "95T15167",
+    "box": [
+      141,
+      188,
+      179,
+      135
+    ],
+    "detection_selection_seconds": 0.028865399995993357,
+    "ocr": {
+      "backend": "paddle",
+      "raw_text": "95-T1\n5167",
+      "text": "95T15167",
+      "status": "prediction",
+      "confidence": 0.9122854471206665,
+      "seconds": 0.4929104999973788,
+      "error": null,
+      "tokens": [
+        {
+          "text": "95-T1",
+          "score": 0.9122854471206665,
+          "polygon": [
+            [
+              30.0,
+              12.0
+            ],
+            [
+              174.0,
+              12.0
+            ],
+            [
+              174.0,
+              77.0
+            ],
+            [
+              30.0,
+              77.0
+            ]
+          ],
+          "x": 30.0,
+          "y": 44.5,
+          "height": 65.0
+        },
+        {
+          "text": "5167",
+          "score": 0.9964320659637451,
+          "polygon": [
+            [
+              32.0,
+              68.0
+            ],
+            [
+              177.0,
+              71.0
+            ],
+            [
+              177.0,
+              132.0
+            ],
+            [
+              31.0,
+              129.0
+            ]
+          ],
+          "x": 31.0,
+          "y": 100.0,
+          "height": 64.0
+        }
+      ],
+      "timings": {
+        "inference_seconds": 0.4885307999938959,
+        "worker_pid": 8256,
+        "decode_seconds": 0.0008711000045877881,
+        "cache_hit": false,
+        "cold_start_seconds": 0.0,
+        "request_seconds": 0.490894999995362,
+        "encode_seconds": 0.0020072000043001026
+      }
+    },
+    "total_pipeline_seconds": 0.5223998000001302
+  },
+  {
+    "image": "0405",
+    "text": "65H69154",
+    "box": [
+      195,
+      173,
+      154,
+      102
+    ],
+    "detection_selection_seconds": 0.04106840000167722,
+    "ocr": {
+      "backend": "paddle",
+      "raw_text": "65-H6\n9154",
+      "text": "65H69154",
+      "status": "prediction",
+      "confidence": 0.9458898305892944,
+      "seconds": 0.4634063999983482,
+      "error": null,
+      "tokens": [
+        {
+          "text": "65-H6",
+          "score": 0.9458898305892944,
+          "polygon": [
+            [
+              19.0,
+              0.0
+            ],
+            [
+              136.0,
+              0.0
+            ],
+            [
+              135.0,
+              56.0
+            ],
+            [
+              18.0,
+              52.0
+            ]
+          ],
+          "x": 18.0,
+          "y": 27.0,
+          "height": 56.0
+        },
+        {
+          "text": "9154",
+          "score": 0.9966031312942505,
+          "polygon": [
+            [
+              17.0,
+              48.0
+            ],
+            [
+              137.0,
+              48.0
+            ],
+            [
+              137.0,
+              102.0
+            ],
+            [
+              17.0,
+              102.0
+            ]
+          ],
+          "x": 17.0,
+          "y": 75.0,
+          "height": 54.0
+        }
+      ],
+      "timings": {
+        "inference_seconds": 0.45983179999893764,
+        "worker_pid": 8256,
+        "decode_seconds": 0.0006978000019444153,
+        "cache_hit": false,
+        "cold_start_seconds": 0.0,
+        "request_seconds": 0.4620394000012311,
+        "encode_seconds": 0.0013551999945775606
+      }
+    },
+    "total_pipeline_seconds": 0.5052664000031655
+  },
+  {
+    "image": "0406",
+    "text": "64F106510",
+    "box": [
+      197,
+      193,
+      164,
+      116
+    ],
+    "detection_selection_seconds": 0.031343199996626936,
+    "ocr": {
+      "backend": "paddle",
+      "raw_text": "64-F1\n065.10",
+      "text": "64F106510",
+      "status": "prediction",
+      "confidence": 0.9468099474906921,
+      "seconds": 0.4884405999982846,
+      "error": null,
+      "tokens": [
+        {
+          "text": "64-F1",
+          "score": 0.9468099474906921,
+          "polygon": [
+            [
+              22.0,
+              0.0
+            ],
+            [
+              151.0,
+              7.0
+            ],
+            [
+              147.0,
+              65.0
+            ],
+            [
+              17.0,
+              58.0
+            ]
+          ],
+          "x": 17.0,
+          "y": 32.5,
+          "height": 65.0
+        },
+        {
+          "text": "065.10",
+          "score": 0.9922438263893127,
+          "polygon": [
+            [
+              7.0,
+              52.0
+            ],
+            [
+              161.0,
+              60.0
+            ],
+            [
+              157.0,
+              115.0
+            ],
+            [
+              3.0,
+              107.0
+            ]
+          ],
+          "x": 3.0,
+          "y": 83.5,
+          "height": 63.0
+        }
+      ],
+      "timings": {
+        "inference_seconds": 0.48520640000060666,
+        "worker_pid": 8256,
+        "decode_seconds": 0.0006315999999060296,
+        "cache_hit": false,
+        "cold_start_seconds": 0.0,
+        "request_seconds": 0.4870599999994738,
+        "encode_seconds": 0.0013689999977941625
+      }
+    },
+    "total_pipeline_seconds": 0.5206040999983088
+  },
+  {
+    "image": "0407",
+    "text": "UNKNOWN (OCR Unreadable)",
+    "box": [
+      191,
+      140,
+      91,
+      24
+    ],
+    "detection_selection_seconds": 0.025845800002571195,
+    "ocr": {
+      "backend": "paddle",
+      "raw_text": "",
+      "text": "",
+      "status": "unreadable",
+      "confidence": null,
+      "seconds": 0.032175399996049237,
+      "error": null,
+      "tokens": [],
+      "timings": {
+        "inference_seconds": 0.030899800003680866,
+        "worker_pid": 8256,
+        "decode_seconds": 0.00015940000594127923,
+        "cache_hit": false,
+        "cold_start_seconds": 0.0,
+        "request_seconds": 0.03168999999616062,
+        "encode_seconds": 0.00047810000251047313
+      }
+    },
+    "total_pipeline_seconds": 0.058898800001770724
+  }
+]

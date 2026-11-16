@@ -1,0 +1,93 @@
+{
+  "image": "dataset\\license_plate_dataset\\0\\images\\0405.jpg",
+  "proposal_count": 10,
+  "selected_box": [
+    178,
+    153,
+    156,
+    47
+  ],
+  "character_count": 6,
+  "raw_text": "ITTIIT",
+  "processed_text": "ITTIIT",
+  "status": "recognized",
+  "model": "cnn",
+  "characters": [
+    {
+      "index": 0,
+      "label": "I",
+      "bbox_in_crop": [
+        0,
+        5,
+        4,
+        10
+      ],
+      "confidence": 0.995452880859375
+    },
+    {
+      "index": 1,
+      "label": "T",
+      "bbox_in_crop": [
+        42,
+        26,
+        17,
+        21
+      ],
+      "confidence": 0.453330397605896
+    },
+    {
+      "index": 2,
+      "label": "T",
+      "bbox_in_crop": [
+        64,
+        27,
+        18,
+        20
+      ],
+      "confidence": 0.3934408724308014
+    },
+    {
+      "index": 3,
+      "label": "I",
+      "bbox_in_crop": [
+        109,
+        28,
+        8,
+        19
+      ],
+      "confidence": 0.9975143671035767
+    },
+    {
+      "index": 4,
+      "label": "I",
+      "bbox_in_crop": [
+        121,
+        28,
+        7,
+        19
+      ],
+      "confidence": 0.9980887770652771
+    },
+    {
+      "index": 5,
+      "label": "T",
+      "bbox_in_crop": [
+        132,
+        29,
+        18,
+        18
+      ],
+      "confidence": 0.5543044805526733
+    }
+  ],
+  "selected_candidate": 1,
+  "candidate_score_heuristic": 0.6288526666201084,
+  "confidence": [
+    0.995452880859375,
+    0.453330397605896,
+    0.3934408724308014,
+    0.9975143671035767,
+    0.9980887770652771,
+    0.5543044805526733
+  ]
+}

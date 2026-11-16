@@ -1,0 +1,7 @@
+﻿image,model,proposal_count,selected_box,character_count,raw_text,processed_text,status
+dataset\license_plate_dataset\0\images\0402.jpg,cnn,16,"[208, 192, 145, 101]",9,IILIIIIII,IILIIIIII,ocr_prediction_only
+dataset\license_plate_dataset\0\images\0403.jpg,cnn,17,"[209, 207, 177, 122]",9,IIIIIIIII,IIIIIIIII,ocr_prediction_only
+dataset\license_plate_dataset\0\images\0404.jpg,cnn,7,"[141, 188, 179, 135]",8,IIIIIIII,IIIIIIII,ocr_prediction_only
+dataset\license_plate_dataset\0\images\0405.jpg,cnn,16,"[178, 120, 156, 80]",6,ITCIIT,ITCIIT,ocr_prediction_only
+dataset\license_plate_dataset\0\images\0406.jpg,cnn,12,"[202, 200, 151, 111]",8,IIIIIIII,IIIIIIII,ocr_prediction_only
+dataset\license_plate_dataset\0\images\0407.jpg,cnn,7,,5,,,low_quality_candidates_rejected

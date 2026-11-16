@@ -21,7 +21,12 @@ def preprocess_plate(plate_img: np.ndarray) -> np.ndarray:
     if plate_img is None or plate_img.size == 0:
         raise ValueError("Ảnh biển số không hợp lệ (None).")
 
-    gray = cv2.cvtColor(plate_img, cv2.COLOR_BGR2GRAY)
+    if plate_img.ndim == 2:
+        gray = plate_img
+    elif plate_img.ndim == 3 and plate_img.shape[2] == 3:
+        gray = cv2.cvtColor(plate_img, cv2.COLOR_BGR2GRAY)
+    else:
+        raise ValueError("plate_img must be grayscale or BGR")
 
     # Nâng cao tương phản cục bộ bằng CLAHE
     clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
@@ -32,7 +37,20 @@ def preprocess_plate(plate_img: np.ndarray) -> np.ndarray:
 
     # Phân ngưỡng Otsu nghịch đảo: Ký tự thường có màu sẫm (đen) trên nền biển số sáng (trắng/vàng)
     # Sau THRESH_BINARY_INV, chữ số sẽ là điểm ảnh trắng (255) trên nền đen (0)
-    _, thresh_inv = cv2.threshold(blurred, 0, 255, cv2.THRESH_BINARY_INV | cv2.THRESH_OTSU)
+    _, otsu_inv = cv2.threshold(blurred, 0, 255, cv2.THRESH_BINARY_INV | cv2.THRESH_OTSU)
+    adaptive_inv = cv2.adaptiveThreshold(
+        enhanced, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 21, 7
+    )
+
+    # Select the threshold with more plausible foreground coverage; avoid a
+    # fixed Otsu choice on uneven illumination. Both candidates stay local.
+    def plausible(binary: np.ndarray) -> bool:
+        ratio = float(np.mean(binary > 0))
+        return 0.04 <= ratio <= 0.55
+
+    thresh_inv = otsu_inv if plausible(otsu_inv) else adaptive_inv
+    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (2, 2))
+    thresh_inv = cv2.morphologyEx(thresh_inv, cv2.MORPH_OPEN, kernel)
 
     # Kiểm tra tỷ lệ pixel trắng: Nếu > 55% thì có thể biển số có chữ trắng trên nền tối -> đảo lại
     white_ratio = np.sum(thresh_inv == 255) / float(thresh_inv.size)
@@ -83,7 +101,7 @@ def segment_characters(
         # - Ký tự không quá nhỏ và không chiếm toàn bộ biển số
         # - Chiều cao thường từ 25% đến 95% chiều cao biển (hoặc dòng)
         # - Tỷ lệ w/h của ký tự nằm trong khoảng 0.15 đến 1.1 (trừ chữ 1 rất mỏng hoặc W hơi rộng)
-        if not (0.20 <= h_ratio <= 0.95):
+        if not (0.12 <= h_ratio <= 0.95):
             continue
         if not (0.02 <= w_ratio <= 0.60):
             continue
@@ -109,24 +127,65 @@ def segment_characters(
     if not valid_chars:
         return []
 
+    # Plate frames and screws frequently touch the outer 2% of a crop. Reject
+    # only tiny edge fragments (not full-height characters), then merge
+    # vertically overlapping components that belong to one split glyph.
+    valid_chars = [item for item in valid_chars
+                   if not ((item[0] <= max(2, plate_w * 0.01) or item[0] + item[2] >= plate_w * 0.99)
+                           and (item[3] >= plate_h * 0.45 or item[2] < item[3] * 0.24))]
+    if not valid_chars:
+        return []
+
+    # Merge touching/overlapping sub-contours such as the split strokes of D,
+    # F or 8. Do not merge adjacent normal glyphs: require strong x overlap.
+    merged_chars: List[Tuple[int, int, int, int, np.ndarray]] = []
+    for char in sorted(valid_chars, key=lambda item: item[0]):
+        x, y, w, h, _ = char
+        match = None
+        for i, other in enumerate(merged_chars):
+            ox, oy, ow, oh, _ = other
+            x_intersection = max(0, min(x + w, ox + ow) - max(x, ox))
+            y_intersection = max(0, min(y + h, oy + oh) - max(y, oy))
+            x_overlap = x_intersection / max(1, min(w, ow))
+            y_overlap = y_intersection / max(1, min(h, oh))
+            if x_overlap >= 0.35 and y_overlap >= 0.35:
+                match = i
+                break
+        if match is None:
+            merged_chars.append(char)
+        else:
+            ox, oy, ow, oh, _ = merged_chars[match]
+            nx, ny = min(x, ox), min(y, oy)
+            nr, nb = max(x + w, ox + ow), max(y + h, oy + oh)
+            roi = binary_plate[ny:nb, nx:nr]
+            side = max(nr - nx, nb - ny)
+            padded = np.zeros((side, side), dtype=np.uint8)
+            padded[(side - (nb - ny)) // 2:(side - (nb - ny)) // 2 + nb - ny,
+                   (side - (nr - nx)) // 2:(side - (nr - nx)) // 2 + nr - nx] = roi
+            merged_chars[match] = (nx, ny, nr - nx, nb - ny,
+                                   cv2.threshold(cv2.resize(padded, target_size, interpolation=cv2.INTER_AREA),
+                                                 127, 255, cv2.THRESH_BINARY)[1])
+    valid_chars = merged_chars
+    if not valid_chars:
+        return []
+
     # Sắp xếp ký tự theo đúng chiều đọc (trên xuống dưới, trái sang phải nếu biển 2 dòng)
     # Xác định xem biển số có phải là 2 dòng hay không:
     # Nếu sự phân tách trục Y lớn hơn một ngưỡng (ví dụ > 35% chiều cao biển)
-    y_coords = [item[1] for item in valid_chars]
-    min_y, max_y = min(y_coords), max(y_coords)
-    is_two_lines = (max_y - min_y) > (plate_h * 0.25)
-
+    centers = np.array([item[1] + item[3] / 2.0 for item in valid_chars])
+    is_two_lines = float(np.percentile(centers, 90) - np.percentile(centers, 10)) > plate_h * 0.27
     if is_two_lines:
-        # Phân chia 2 dòng dựa trên ngưỡng y trung bình
-        median_y = np.median(y_coords)
-        line1 = [item for item in valid_chars if item[1] < median_y]
-        line2 = [item for item in valid_chars if item[1] >= median_y]
-
-        line1.sort(key=lambda item: item[0])  # Sắp xếp từ trái sang phải
-        line2.sort(key=lambda item: item[0])
-        sorted_chars = line1 + line2
+        # 1-D two-cluster split using the largest vertical gap between centers.
+        ordered = sorted(valid_chars, key=lambda item: item[1] + item[3] / 2.0)
+        gaps = [((b[1] + b[3] / 2) - (a[1] + a[3] / 2), i)
+                for i, (a, b) in enumerate(zip(ordered, ordered[1:]))]
+        largest_gap, split = max(gaps, default=(0.0, 0))
+        if largest_gap > plate_h * 0.12:
+            line1, line2 = ordered[:split + 1], ordered[split + 1:]
+            sorted_chars = sorted(line1, key=lambda item: item[0]) + sorted(line2, key=lambda item: item[0])
+        else:
+            sorted_chars = sorted(valid_chars, key=lambda item: item[0])
     else:
-        # Biển 1 dòng: Chỉ sắp xếp từ trái qua phải theo x
         sorted_chars = sorted(valid_chars, key=lambda item: item[0])
 
     # Trả về kết quả: (char_img, (x, y, w, h))

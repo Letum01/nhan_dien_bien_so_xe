@@ -1,0 +1,105 @@
+{
+  "image": "dataset\\license_plate_dataset\\0\\images\\0405.jpg",
+  "proposal_count": 16,
+  "selected_box": [
+    178,
+    120,
+    156,
+    80
+  ],
+  "character_count": 6,
+  "raw_text": "ITCIIT",
+  "processed_text": "ITCIIT",
+  "status": "ocr_prediction_only",
+  "model": "cnn",
+  "characters": [
+    {
+      "index": 0,
+      "label": "I",
+      "bbox_in_crop": [
+        3,
+        36,
+        13,
+        24
+      ],
+      "confidence": 0.6568240523338318
+    },
+    {
+      "index": 1,
+      "label": "T",
+      "bbox_in_crop": [
+        42,
+        60,
+        17,
+        20
+      ],
+      "confidence": 0.5479943156242371
+    },
+    {
+      "index": 2,
+      "label": "C",
+      "bbox_in_crop": [
+        64,
+        60,
+        18,
+        20
+      ],
+      "confidence": 0.32337456941604614
+    },
+    {
+      "index": 3,
+      "label": "I",
+      "bbox_in_crop": [
+        110,
+        62,
+        6,
+        18
+      ],
+      "confidence": 0.9998594522476196
+    },
+    {
+      "index": 4,
+      "label": "I",
+      "bbox_in_crop": [
+        122,
+        62,
+        6,
+        18
+      ],
+      "confidence": 0.9996751546859741
+    },
+    {
+      "index": 5,
+      "label": "T",
+      "bbox_in_crop": [
+        132,
+        63,
+        18,
+        17
+      ],
+      "confidence": 0.4994058609008789
+    }
+  ],
+  "ground_truth_used": false,
+  "selected_candidate": 2,
+  "candidate_score_heuristic": 0.7889361022277719,
+  "confidence": [
+    0.6568240523338318,
+    0.5479943156242371,
+    0.32337456941604614,
+    0.9998594522476196,
+    0.9996751546859741,
+    0.4994058609008789
+  ],
+  "artifacts": {
+    "input": "debug_outputs_final\\0405\\00_input.jpg",
+    "preprocess": "debug_outputs_final\\0405\\01_localization_edges.png",
+    "proposals": "debug_outputs_final\\0405\\02_proposals.jpg",
+    "baseline_crop": "debug_outputs_final\\0405\\02b_baseline_crop.jpg",
+    "selected_crop": "debug_outputs_final\\0405\\03_candidate_2_crop.jpg",
+    "rectified": "debug_outputs_final\\0405\\04_candidate_2_rectified.jpg",
+    "binary": "debug_outputs_final\\0405\\05_candidate_2_binary.png",
+    "character_strip": "debug_outputs_final\\0405\\06_character_strip.png",
+    "ocr_overlay": "debug_outputs_final\\0405\\07_selected_box_ocr.jpg"
+  }
+}

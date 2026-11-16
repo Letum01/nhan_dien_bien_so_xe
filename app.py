@@ -3,7 +3,9 @@ Module 6: Streamlit GUI for ALPR
 Author: ALPR Team
 """
 
-import os
+import logging
+import time
+import pandas as pd
 from typing import Optional, Dict, Any
 import streamlit as st
 import cv2
@@ -13,6 +15,11 @@ from PIL import Image
 from main import end_to_end_pipeline, load_trained_models
 from localization import locate_license_plate
 from segmentation import segment_characters
+from database import RecognitionDatabase
+from image_io import decode_uploaded_image
+from ocr_backends import paddle_available
+
+logger = logging.getLogger(__name__)
 
 st.set_page_config(
     page_title="Hệ Thống Nhận Diện Biển Số Xe (ALPR)",
@@ -20,7 +27,19 @@ st.set_page_config(
     layout="wide"
 )
 
-st.title(" Hệ Thống Nhận Diện Biển Số Xe Tự Động (ALPR Pipeline)")
+@st.cache_resource
+def get_database() -> RecognitionDatabase:
+    return RecognitionDatabase()
+
+database = get_database()
+
+
+@st.cache_data(show_spinner=False)
+def decode_image_for_display(data: bytes) -> Optional[np.ndarray]:
+    """Decode an uploaded image once per content for this Streamlit session."""
+    return decode_uploaded_image(data)
+
+st.title("Hệ thống nhận diện biển số xe Việt Nam")
 st.markdown(
     """
     Preprocessing & Localization -> Character Segmentation -> Classification (CNN / SVM / RF)**.
@@ -37,53 +56,75 @@ def get_models() -> Optional[Dict[str, Any]]:
 models_dict = get_models()
 
 st.sidebar.header(" Cấu hình Nhận diện")
-model_choice = st.sidebar.selectbox(
-    "Chọn mô hình phân loại ký tự:",
-    options=["Random Forest (HOG + Ensembles)", "SVM (HOG + Support Vector)", "CNN (Deep Learning)"],
-    index=0
-)
-
 model_type_map = {
     "CNN (Deep Learning)": "cnn",
     "SVM (HOG + Support Vector)": "svm",
-    "Random Forest (HOG + Ensembles)": "rf"
+    "Random Forest (HOG + Ensembles)": "rf",
+    "PaddleOCR (chuỗi trực tiếp)": "paddle",
 }
+available_choices = [label for label, key in model_type_map.items() if models_dict and models_dict.get(key) is not None]
+available_choices.append("PaddleOCR (chuỗi trực tiếp)")
+if not available_choices:
+    st.sidebar.warning("Không có mô hình nhận dạng khả dụng; thêm trọng số đã huấn luyện vào saved_models.")
+    available_choices = list(model_type_map)
+model_choice = st.sidebar.selectbox("Chọn mô hình phân loại ký tự:", options=available_choices)
 selected_model_type = model_type_map[model_choice]
+if selected_model_type == "paddle" and not paddle_available():
+    st.sidebar.warning("Chưa cài môi trường Paddle. Xem requirements-paddle.txt và README.")
 
 if models_dict is None:
     st.sidebar.error(" Chưa tìm thấy mô hình trong thư mục `saved_models`!")
     st.sidebar.info("Vui lòng chạy `python main.py` trong terminal để huấn luyện và lưu mô hình.")
 else:
-    st.sidebar.success(" Đã nạp thành công 3 mô hình (CNN, SVM, Random Forest).")
+    st.sidebar.success("Đã nạp: " + ", ".join(key.upper() for key in ("cnn", "svm", "rf") if models_dict.get(key) is not None))
 
 uploaded_file = st.sidebar.file_uploader(
     "Chọn ảnh xe hoặc biển số cần nhận diện:",
     type=["jpg", "jpeg", "png"]
 )
 
-tab1, tab2 = st.tabs([" Nhận diện Trực quan", " Chi tiết Kỹ thuật"])
+tab1, tab2, tab3 = st.tabs(["Nhận diện ảnh", "Lịch sử", "Thông tin mô hình"])
 
 with tab1:
     if uploaded_file is not None:
-        file_bytes = np.asarray(bytearray(uploaded_file.read()), dtype=np.uint8)
-        image_bgr = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
+        image_bgr = decode_image_for_display(uploaded_file.getvalue())
 
+        if image_bgr is None:
+            st.error("Không đọc được ảnh. Hãy tải lên tệp JPG hoặc PNG hợp lệ.")
+            st.stop()
         col1, col2 = st.columns(2)
         with col1:
             st.subheader("1. Ảnh xe gốc tải lên")
-            st.image(cv2.cvtColor(image_bgr, cv2.COLOR_BGR2RGB), use_container_width=True)
+            st.image(cv2.cvtColor(image_bgr, cv2.COLOR_BGR2RGB), use_column_width=True)
 
-        with st.spinner("Đang xử lý toàn bộ luồng ALPR..."):
-            plate_text, annotated, plate_crop, char_images = end_to_end_pipeline(
-                image_bgr,
-                model_type=selected_model_type,
-                models_dict=models_dict
-            )
+        started = time.perf_counter()
+        with st.spinner("Đang xử lý ảnh..."):
+            try:
+                recognition_trace = {}
+                plate_text, annotated, plate_crop, char_images = end_to_end_pipeline(
+                    image_bgr, model_type=selected_model_type, models_dict=models_dict, trace=recognition_trace
+                )
+            except (ValueError, KeyError, cv2.error) as exc:
+                logger.exception("ALPR pipeline rejected uploaded image")
+                st.error(f"Không thể nhận diện với cấu hình hiện tại: {exc}")
+                st.stop()
+            except Exception as exc:
+                logger.exception("Unexpected ALPR inference failure")
+                st.error(f"Lỗi không mong đợi khi nhận diện ({type(exc).__name__}). Xem log ứng dụng để biết chi tiết.")
+                st.stop()
+        elapsed = time.perf_counter() - started
 
         with col2:
             st.subheader("2. Kết quả nhận diện trên xe")
-            st.image(cv2.cvtColor(annotated, cv2.COLOR_BGR2RGB), use_container_width=True)
-            st.success(f"###  Biển số nhận diện được: `{plate_text}`")
+            st.image(cv2.cvtColor(annotated, cv2.COLOR_BGR2RGB), use_column_width=True)
+            st.success(f"Biển số: `{plate_text}`")
+            st.caption(f"Thời gian xử lý: {elapsed:.3f} giây")
+            if st.button("Lưu kết quả vào lịch sử"):
+                status = "recognized" if not plate_text.startswith("UNKNOWN") else "not_found"
+                database.add(recognition_trace.get("raw_text", ""), plate_text, selected_model_type,
+                             uploaded_file.name, status=status,
+                             confidence=recognition_trace.get("ocr_result", {}).get("confidence"))
+                st.success("Đã lưu lịch sử (không lưu ảnh tải lên).")
 
         st.markdown("---")
         st.subheader("3. Các bước xử lý trung gian (Intermediate Steps)")
@@ -110,7 +151,7 @@ with tab1:
     else:
         st.info(" Hãy tải lên một ảnh phương tiện giao thông từ thanh bên trái để bắt đầu nhận diện.")
 
-with tab2:
+with tab3:
     st.markdown(
         """
         ### Kiến trúc Hệ thống ALPR:
@@ -131,3 +172,16 @@ with tab2:
           - Đánh giá trên Test set: Accuracy, Precision, Recall, Macro F1-score, Confusion Matrix.
         """
     )
+    st.caption("PaddleOCR chạy trong worker riêng, nhận trực tiếp chuỗi từ crop. Confidence là điểm model chưa hiệu chuẩn. Video, camera và YOLO chưa được bật.")
+
+with tab2:
+    query = st.text_input("Tìm theo biển số")
+    records = database.search(query)
+    if records:
+        st.dataframe(pd.DataFrame(records), use_container_width=True, hide_index=True)
+        st.download_button("Xuất CSV", pd.DataFrame(records).to_csv(index=False).encode("utf-8-sig"), "alpr_history.csv", "text/csv")
+    else:
+        st.info("Chưa có lịch sử nhận diện.")
+    if st.button("Xóa toàn bộ lịch sử", type="secondary"):
+        database.clear()
+        st.rerun()

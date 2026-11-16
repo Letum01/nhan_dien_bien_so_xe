@@ -5,6 +5,7 @@ Author: ALPR Team
 
 from typing import Tuple, Dict, Any, Optional
 import os
+import json
 import joblib
 import numpy as np
 from sklearn.svm import SVC
@@ -110,7 +111,9 @@ def train_and_save_all_models(
     X_train_hog: np.ndarray,
     save_dir: str = "saved_models",
     epochs: int = 15,
-    batch_size: int = 64
+    batch_size: int = 64,
+    X_val_img: Optional[np.ndarray] = None,
+    y_val: Optional[np.ndarray] = None
 ) -> Dict[str, Any]:
     """
     Huấn luyện cả 3 mô hình (SVM, Random Forest, CNN) CHỈ TRÊN TẬP TRAIN SET
@@ -128,6 +131,8 @@ def train_and_save_all_models(
         Dictionary chứa các mô hình đã huấn luyện và scaler.
     """
     os.makedirs(save_dir, exist_ok=True)
+    if (X_val_img is None) != (y_val is None):
+        raise ValueError("X_val_img and y_val must either both be supplied or both be omitted")
 
     # 1. Chuẩn hóa đặc trưng HOG chỉ fit trên Train set
     scaler = StandardScaler()
@@ -151,20 +156,37 @@ def train_and_save_all_models(
     # 4. Huấn luyện CNN
     print("[INFO] Đang huấn luyện CNN với Data Augmentation...")
     cnn_model = build_cnn_model(input_shape=(32, 32, 1), num_classes=36)
+    # Mild augmentation in TRAIN mode only; original checkpoints are unaffected.
+    from dataset import get_data_augmentation_pipeline
+    cnn_model = models.Sequential([layers.Input(shape=(32, 32, 1)),
+                                   get_data_augmentation_pipeline(), cnn_model],
+                                  name="ALPR_Augmented_Character_CNN")
+    cnn_model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=1e-3),
+                      loss="sparse_categorical_crossentropy", metrics=["accuracy"])
+    validation_data = (X_val_img, y_val) if X_val_img is not None else None
     
     callbacks = [
-        tf.keras.callbacks.EarlyStopping(monitor='loss', patience=4, restore_best_weights=True)
+        tf.keras.callbacks.EarlyStopping(monitor='val_loss' if validation_data else 'loss', patience=4, restore_best_weights=True),
+        tf.keras.callbacks.ReduceLROnPlateau(monitor='val_loss' if validation_data else 'loss', factor=0.5, patience=2, min_lr=1e-6),
     ]
+    if validation_data is not None:
+        callbacks.append(tf.keras.callbacks.ModelCheckpoint(
+            os.path.join(save_dir, "cnn_best.keras"), monitor="val_loss", save_best_only=True
+        ))
 
     cnn_model.fit(
         X_train_img,
         y_train,
         epochs=epochs,
         batch_size=batch_size,
+        validation_data=validation_data,
+        shuffle=True,
         callbacks=callbacks,
         verbose=1
     )
     cnn_model.save(os.path.join(save_dir, "cnn_model.keras"))
+    with open(os.path.join(save_dir, "character_model_config.json"), "w", encoding="utf-8") as config_file:
+        json.dump({"classes": list("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"), "image_size": [32, 32], "input_range": [0, 255]}, config_file, indent=2)
     print("[INFO] Đã lưu CNN model thành công.")
 
     return {

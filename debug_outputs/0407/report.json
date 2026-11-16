@@ -1,0 +1,129 @@
+{
+  "image": "dataset\\license_plate_dataset\\0\\images\\0407.jpg",
+  "proposal_count": 10,
+  "selected_box": [
+    390,
+    86,
+    37,
+    13
+  ],
+  "character_count": 9,
+  "raw_text": "ILIIIIIII",
+  "processed_text": "ILIIIIIII",
+  "status": "recognized",
+  "model": "cnn",
+  "characters": [
+    {
+      "index": 0,
+      "label": "I",
+      "bbox_in_crop": [
+        0,
+        2,
+        4,
+        10
+      ],
+      "confidence": 0.9925739765167236
+    },
+    {
+      "index": 1,
+      "label": "L",
+      "bbox_in_crop": [
+        6,
+        0,
+        7,
+        8
+      ],
+      "confidence": 0.9625586271286011
+    },
+    {
+      "index": 2,
+      "label": "I",
+      "bbox_in_crop": [
+        14,
+        3,
+        2,
+        6
+      ],
+      "confidence": 0.9996616840362549
+    },
+    {
+      "index": 3,
+      "label": "I",
+      "bbox_in_crop": [
+        17,
+        4,
+        2,
+        4
+      ],
+      "confidence": 0.9934173822402954
+    },
+    {
+      "index": 4,
+      "label": "I",
+      "bbox_in_crop": [
+        20,
+        6,
+        2,
+        2
+      ],
+      "confidence": 0.9513142108917236
+    },
+    {
+      "index": 5,
+      "label": "I",
+      "bbox_in_crop": [
+        24,
+        3,
+        2,
+        2
+      ],
+      "confidence": 0.9513142108917236
+    },
+    {
+      "index": 6,
+      "label": "I",
+      "bbox_in_crop": [
+        25,
+        7,
+        2,
+        2
+      ],
+      "confidence": 0.9513144493103027
+    },
+    {
+      "index": 7,
+      "label": "I",
+      "bbox_in_crop": [
+        27,
+        3,
+        2,
+        2
+      ],
+      "confidence": 0.9513144493103027
+    },
+    {
+      "index": 8,
+      "label": "I",
+      "bbox_in_crop": [
+        8,
+        9,
+        2,
+        2
+      ],
+      "confidence": 0.9513144493103027
+    }
+  ],
+  "selected_candidate": 2,
+  "candidate_score_heuristic": 0.607950752950753,
+  "confidence": [
+    0.9925739765167236,
+    0.9625586271286011,
+    0.9996616840362549,
+    0.9934173822402954,
+    0.9513142108917236,
+    0.9513142108917236,
+    0.9513144493103027,
+    0.9513144493103027,
+    0.9513144493103027
+  ]
+}

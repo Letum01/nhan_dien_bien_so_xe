@@ -1,0 +1,4 @@
+image_path,plate_text,bbox_x,bbox_y,bbox_width,bbox_height,annotation_status,annotator_notes
+license_plate_dataset/0/images/0402.jpg,65L100780,203,185,157,115,manual_estimate_from_user_image,"Visible two-row plate: 65-L1 / 007.80; separator punctuation normalized out. Verify text and bounding box before use."
+license_plate_dataset/0/images/0403.jpg,83FD9972,204,200,181,131,manual_estimate_from_user_image,"Visible two-row plate: 83-FD / 9972. Verify text and bounding box before use."
+,, , , , ,unlabeled,

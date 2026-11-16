@@ -1,0 +1,627 @@
+{
+  "results": [
+    {
+      "image": "dataset\\license_plate_dataset\\0\\images\\0402.jpg",
+      "proposal_count": 16,
+      "selected_box": [
+        208,
+        192,
+        145,
+        101
+      ],
+      "character_count": 9,
+      "raw_text": "IILIIIIII",
+      "processed_text": "IILIIIIII",
+      "status": "recognized",
+      "model": "cnn",
+      "characters": [
+        {
+          "index": 0,
+          "label": "I",
+          "bbox_in_crop": [
+            19,
+            6,
+            19,
+            43
+          ],
+          "confidence": 0.9886699914932251
+        },
+        {
+          "index": 1,
+          "label": "I",
+          "bbox_in_crop": [
+            41,
+            6,
+            20,
+            43
+          ],
+          "confidence": 0.9890688061714172
+        },
+        {
+          "index": 2,
+          "label": "L",
+          "bbox_in_crop": [
+            84,
+            5,
+            19,
+            43
+          ],
+          "confidence": 0.5022647976875305
+        },
+        {
+          "index": 3,
+          "label": "I",
+          "bbox_in_crop": [
+            109,
+            4,
+            12,
+            19
+          ],
+          "confidence": 0.5668087005615234
+        },
+        {
+          "index": 4,
+          "label": "I",
+          "bbox_in_crop": [
+            7,
+            59,
+            19,
+            41
+          ],
+          "confidence": 0.8238930702209473
+        },
+        {
+          "index": 5,
+          "label": "I",
+          "bbox_in_crop": [
+            34,
+            58,
+            19,
+            41
+          ],
+          "confidence": 0.8709694147109985
+        },
+        {
+          "index": 6,
+          "label": "I",
+          "bbox_in_crop": [
+            61,
+            57,
+            18,
+            42
+          ],
+          "confidence": 0.9770301580429077
+        },
+        {
+          "index": 7,
+          "label": "I",
+          "bbox_in_crop": [
+            95,
+            57,
+            18,
+            40
+          ],
+          "confidence": 0.9794871211051941
+        },
+        {
+          "index": 8,
+          "label": "I",
+          "bbox_in_crop": [
+            123,
+            56,
+            17,
+            40
+          ],
+          "confidence": 0.9657320976257324
+        }
+      ],
+      "selected_candidate": 1,
+      "candidate_score_heuristic": 0.8649660668892528,
+      "confidence": [
+        0.9886699914932251,
+        0.9890688061714172,
+        0.5022647976875305,
+        0.5668087005615234,
+        0.8238930702209473,
+        0.8709694147109985,
+        0.9770301580429077,
+        0.9794871211051941,
+        0.9657320976257324
+      ]
+    },
+    {
+      "image": "dataset\\license_plate_dataset\\0\\images\\0403.jpg",
+      "proposal_count": 17,
+      "selected_box": [
+        209,
+        207,
+        177,
+        122
+      ],
+      "character_count": 10,
+      "raw_text": "IIIIIIIIII",
+      "processed_text": "IIIIIIIIII",
+      "status": "recognized",
+      "model": "cnn",
+      "characters": [
+        {
+          "index": 0,
+          "label": "I",
+          "bbox_in_crop": [
+            26,
+            15,
+            22,
+            46
+          ],
+          "confidence": 0.994499921798706
+        },
+        {
+          "index": 1,
+          "label": "I",
+          "bbox_in_crop": [
+            50,
+            14,
+            21,
+            46
+          ],
+          "confidence": 0.8549022674560547
+        },
+        {
+          "index": 2,
+          "label": "I",
+          "bbox_in_crop": [
+            96,
+            11,
+            20,
+            48
+          ],
+          "confidence": 0.9701349139213562
+        },
+        {
+          "index": 3,
+          "label": "I",
+          "bbox_in_crop": [
+            121,
+            11,
+            22,
+            47
+          ],
+          "confidence": 0.979205846786499
+        },
+        {
+          "index": 4,
+          "label": "I",
+          "bbox_in_crop": [
+            0,
+            10,
+            24,
+            112
+          ],
+          "confidence": 0.9985772371292114
+        },
+        {
+          "index": 5,
+          "label": "I",
+          "bbox_in_crop": [
+            32,
+            69,
+            21,
+            43
+          ],
+          "confidence": 0.9899091720581055
+        },
+        {
+          "index": 6,
+          "label": "I",
+          "bbox_in_crop": [
+            63,
+            68,
+            21,
+            44
+          ],
+          "confidence": 0.9918952584266663
+        },
+        {
+          "index": 7,
+          "label": "I",
+          "bbox_in_crop": [
+            93,
+            67,
+            19,
+            45
+          ],
+          "confidence": 0.971668004989624
+        },
+        {
+          "index": 8,
+          "label": "I",
+          "bbox_in_crop": [
+            126,
+            66,
+            21,
+            45
+          ],
+          "confidence": 0.9608621597290039
+        },
+        {
+          "index": 9,
+          "label": "I",
+          "bbox_in_crop": [
+            162,
+            67,
+            11,
+            36
+          ],
+          "confidence": 0.9995562434196472
+        }
+      ],
+      "selected_candidate": 1,
+      "candidate_score_heuristic": 0.8137071050109324,
+      "confidence": [
+        0.994499921798706,
+        0.8549022674560547,
+        0.9701349139213562,
+        0.979205846786499,
+        0.9985772371292114,
+        0.9899091720581055,
+        0.9918952584266663,
+        0.971668004989624,
+        0.9608621597290039,
+        0.9995562434196472
+      ]
+    },
+    {
+      "image": "dataset\\license_plate_dataset\\0\\images\\0404.jpg",
+      "proposal_count": 7,
+      "selected_box": [
+        141,
+        188,
+        179,
+        135
+      ],
+      "character_count": 8,
+      "raw_text": "IIIIIIII",
+      "processed_text": "IIIIIIII",
+      "status": "recognized",
+      "model": "cnn",
+      "characters": [
+        {
+          "index": 0,
+          "label": "I",
+          "bbox_in_crop": [
+            38,
+            20,
+            24,
+            51
+          ],
+          "confidence": 0.9910435676574707
+        },
+        {
+          "index": 1,
+          "label": "I",
+          "bbox_in_crop": [
+            65,
+            21,
+            23,
+            50
+          ],
+          "confidence": 0.9791812896728516
+        },
+        {
+          "index": 2,
+          "label": "I",
+          "bbox_in_crop": [
+            127,
+            34,
+            8,
+            38
+          ],
+          "confidence": 0.9996874332427979
+        },
+        {
+          "index": 3,
+          "label": "I",
+          "bbox_in_crop": [
+            150,
+            21,
+            16,
+            51
+          ],
+          "confidence": 0.987431526184082
+        },
+        {
+          "index": 4,
+          "label": "I",
+          "bbox_in_crop": [
+            42,
+            79,
+            23,
+            47
+          ],
+          "confidence": 0.9781290888786316
+        },
+        {
+          "index": 5,
+          "label": "I",
+          "bbox_in_crop": [
+            81,
+            80,
+            16,
+            47
+          ],
+          "confidence": 0.9624730348587036
+        },
+        {
+          "index": 6,
+          "label": "I",
+          "bbox_in_crop": [
+            112,
+            81,
+            21,
+            46
+          ],
+          "confidence": 0.9815542697906494
+        },
+        {
+          "index": 7,
+          "label": "I",
+          "bbox_in_crop": [
+            147,
+            81,
+            22,
+            47
+          ],
+          "confidence": 0.9654682278633118
+        }
+      ],
+      "selected_candidate": 5,
+      "candidate_score_heuristic": 0.7812828750749511,
+      "confidence": [
+        0.9910435676574707,
+        0.9791812896728516,
+        0.9996874332427979,
+        0.987431526184082,
+        0.9781290888786316,
+        0.9624730348587036,
+        0.9815542697906494,
+        0.9654682278633118
+      ]
+    },
+    {
+      "image": "dataset\\license_plate_dataset\\0\\images\\0405.jpg",
+      "proposal_count": 16,
+      "selected_box": [
+        178,
+        120,
+        156,
+        80
+      ],
+      "character_count": 6,
+      "raw_text": "ITCIIT",
+      "processed_text": "ITCIIT",
+      "status": "recognized",
+      "model": "cnn",
+      "characters": [
+        {
+          "index": 0,
+          "label": "I",
+          "bbox_in_crop": [
+            3,
+            36,
+            13,
+            24
+          ],
+          "confidence": 0.6568240523338318
+        },
+        {
+          "index": 1,
+          "label": "T",
+          "bbox_in_crop": [
+            42,
+            60,
+            17,
+            20
+          ],
+          "confidence": 0.5479943156242371
+        },
+        {
+          "index": 2,
+          "label": "C",
+          "bbox_in_crop": [
+            64,
+            60,
+            18,
+            20
+          ],
+          "confidence": 0.32337456941604614
+        },
+        {
+          "index": 3,
+          "label": "I",
+          "bbox_in_crop": [
+            110,
+            62,
+            6,
+            18
+          ],
+          "confidence": 0.9998594522476196
+        },
+        {
+          "index": 4,
+          "label": "I",
+          "bbox_in_crop": [
+            122,
+            62,
+            6,
+            18
+          ],
+          "confidence": 0.9996751546859741
+        },
+        {
+          "index": 5,
+          "label": "T",
+          "bbox_in_crop": [
+            132,
+            63,
+            18,
+            17
+          ],
+          "confidence": 0.4994058609008789
+        }
+      ],
+      "selected_candidate": 2,
+      "candidate_score_heuristic": 0.7889361022277719,
+      "confidence": [
+        0.6568240523338318,
+        0.5479943156242371,
+        0.32337456941604614,
+        0.9998594522476196,
+        0.9996751546859741,
+        0.4994058609008789
+      ]
+    },
+    {
+      "image": "dataset\\license_plate_dataset\\0\\images\\0406.jpg",
+      "proposal_count": 12,
+      "selected_box": [
+        202,
+        200,
+        151,
+        111
+      ],
+      "character_count": 9,
+      "raw_text": "IIIIIIIII",
+      "processed_text": "IIIIIIIII",
+      "status": "recognized",
+      "model": "cnn",
+      "characters": [
+        {
+          "index": 0,
+          "label": "I",
+          "bbox_in_crop": [
+            26,
+            3,
+            19,
+            44
+          ],
+          "confidence": 0.9926462173461914
+        },
+        {
+          "index": 1,
+          "label": "I",
+          "bbox_in_crop": [
+            48,
+            0,
+            18,
+            49
+          ],
+          "confidence": 0.9937426447868347
+        },
+        {
+          "index": 2,
+          "label": "I",
+          "bbox_in_crop": [
+            92,
+            4,
+            21,
+            47
+          ],
+          "confidence": 0.899551272392273
+        },
+        {
+          "index": 3,
+          "label": "I",
+          "bbox_in_crop": [
+            116,
+            5,
+            16,
+            47
+          ],
+          "confidence": 0.9728156924247742
+        },
+        {
+          "index": 4,
+          "label": "I",
+          "bbox_in_crop": [
+            10,
+            54,
+            19,
+            43
+          ],
+          "confidence": 0.9739907383918762
+        },
+        {
+          "index": 5,
+          "label": "I",
+          "bbox_in_crop": [
+            38,
+            55,
+            17,
+            43
+          ],
+          "confidence": 0.993529736995697
+        },
+        {
+          "index": 6,
+          "label": "I",
+          "bbox_in_crop": [
+            64,
+            57,
+            20,
+            43
+          ],
+          "confidence": 0.9718957543373108
+        },
+        {
+          "index": 7,
+          "label": "I",
+          "bbox_in_crop": [
+            100,
+            59,
+            12,
+            43
+          ],
+          "confidence": 0.9853816032409668
+        },
+        {
+          "index": 8,
+          "label": "I",
+          "bbox_in_crop": [
+            125,
+            42,
+            26,
+            61
+          ],
+          "confidence": 0.9210007190704346
+        }
+      ],
+      "selected_candidate": 3,
+      "candidate_score_heuristic": 0.7758608522892158,
+      "confidence": [
+        0.9926462173461914,
+        0.9937426447868347,
+        0.899551272392273,
+        0.9728156924247742,
+        0.9739907383918762,
+        0.993529736995697,
+        0.9718957543373108,
+        0.9853816032409668,
+        0.9210007190704346
+      ]
+    },
+    {
+      "image": "dataset\\license_plate_dataset\\0\\images\\0407.jpg",
+      "proposal_count": 7,
+      "selected_box": null,
+      "character_count": 1,
+      "raw_text": "",
+      "processed_text": "",
+      "status": "low_quality_candidates_rejected",
+      "model": "cnn",
+      "characters": [],
+      "selected_candidate": null,
+      "candidate_score_heuristic": 0.5437831264838114
+    }
+  ],
+  "ground_truth_used": false
+}

@@ -1,0 +1,9 @@
+{
+  "model": "cnn",
+  "samples": 0,
+  "ground_truth_source": "dataset\\evaluation_ground_truth_template.csv",
+  "plate_exact_match": 0.0,
+  "mean_cer": 0.0,
+  "mean_seconds": 0.0,
+  "warning": "Only rows marked human_reviewed are included. Detector metrics require verified box annotations and are not inferred from this OCR-only report."
+}

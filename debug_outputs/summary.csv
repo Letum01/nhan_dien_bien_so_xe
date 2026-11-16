@@ -1,0 +1,7 @@
+﻿image,model,proposal_count,selected_box,character_count,raw_text,processed_text,status
+dataset\license_plate_dataset\0\images\0402.jpg,cnn,10,"[478, 0, 122, 48]",9,IIIIHIIJW,IIIIHIIJW,recognized
+dataset\license_plate_dataset\0\images\0403.jpg,cnn,10,"[127, 181, 83, 29]",10,ILLTIMPIII,ILLTIMPIII,recognized
+dataset\license_plate_dataset\0\images\0404.jpg,cnn,10,"[519, 8, 81, 28]",10,IIIIFPIIJI,IIIIFPIIJI,recognized
+dataset\license_plate_dataset\0\images\0405.jpg,cnn,10,"[178, 153, 156, 47]",6,ITTIIT,ITTIIT,recognized
+dataset\license_plate_dataset\0\images\0406.jpg,cnn,10,"[202, 200, 151, 111]",9,IIIIIIIII,IIIIIIIII,recognized
+dataset\license_plate_dataset\0\images\0407.jpg,cnn,10,"[390, 86, 37, 13]",9,ILIIIIIII,ILIIIIIII,recognized

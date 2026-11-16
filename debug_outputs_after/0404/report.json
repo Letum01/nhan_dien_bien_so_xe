@@ -1,0 +1,117 @@
+{
+  "image": "dataset\\license_plate_dataset\\0\\images\\0404.jpg",
+  "proposal_count": 7,
+  "selected_box": [
+    141,
+    188,
+    179,
+    135
+  ],
+  "character_count": 8,
+  "raw_text": "IIIIIIII",
+  "processed_text": "IIIIIIII",
+  "status": "recognized",
+  "model": "cnn",
+  "characters": [
+    {
+      "index": 0,
+      "label": "I",
+      "bbox_in_crop": [
+        38,
+        20,
+        24,
+        51
+      ],
+      "confidence": 0.9910435676574707
+    },
+    {
+      "index": 1,
+      "label": "I",
+      "bbox_in_crop": [
+        65,
+        21,
+        23,
+        50
+      ],
+      "confidence": 0.9791812896728516
+    },
+    {
+      "index": 2,
+      "label": "I",
+      "bbox_in_crop": [
+        127,
+        34,
+        8,
+        38
+      ],
+      "confidence": 0.9996874332427979
+    },
+    {
+      "index": 3,
+      "label": "I",
+      "bbox_in_crop": [
+        150,
+        21,
+        16,
+        51
+      ],
+      "confidence": 0.987431526184082
+    },
+    {
+      "index": 4,
+      "label": "I",
+      "bbox_in_crop": [
+        42,
+        79,
+        23,
+        47
+      ],
+      "confidence": 0.9781290888786316
+    },
+    {
+      "index": 5,
+      "label": "I",
+      "bbox_in_crop": [
+        81,
+        80,
+        16,
+        47
+      ],
+      "confidence": 0.9624730348587036
+    },
+    {
+      "index": 6,
+      "label": "I",
+      "bbox_in_crop": [
+        112,
+        81,
+        21,
+        46
+      ],
+      "confidence": 0.9815542697906494
+    },
+    {
+      "index": 7,
+      "label": "I",
+      "bbox_in_crop": [
+        147,
+        81,
+        22,
+        47
+      ],
+      "confidence": 0.9654682278633118
+    }
+  ],
+  "selected_candidate": 5,
+  "candidate_score_heuristic": 0.7812828750749511,
+  "confidence": [
+    0.9910435676574707,
+    0.9791812896728516,
+    0.9996874332427979,
+    0.987431526184082,
+    0.9781290888786316,
+    0.9624730348587036,
+    0.9815542697906494,
+    0.9654682278633118
+  ]
+}

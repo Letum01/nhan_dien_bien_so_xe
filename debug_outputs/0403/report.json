@@ -1,0 +1,141 @@
+{
+  "image": "dataset\\license_plate_dataset\\0\\images\\0403.jpg",
+  "proposal_count": 10,
+  "selected_box": [
+    127,
+    181,
+    83,
+    29
+  ],
+  "character_count": 10,
+  "raw_text": "ILLTIMPIII",
+  "processed_text": "ILLTIMPIII",
+  "status": "recognized",
+  "model": "cnn",
+  "characters": [
+    {
+      "index": 0,
+      "label": "I",
+      "bbox_in_crop": [
+        0,
+        0,
+        5,
+        9
+      ],
+      "confidence": 0.92010897397995
+    },
+    {
+      "index": 1,
+      "label": "L",
+      "bbox_in_crop": [
+        13,
+        2,
+        6,
+        5
+      ],
+      "confidence": 0.4208773672580719
+    },
+    {
+      "index": 2,
+      "label": "L",
+      "bbox_in_crop": [
+        15,
+        9,
+        3,
+        4
+      ],
+      "confidence": 0.7554250359535217
+    },
+    {
+      "index": 3,
+      "label": "T",
+      "bbox_in_crop": [
+        20,
+        0,
+        9,
+        9
+      ],
+      "confidence": 0.25470608472824097
+    },
+    {
+      "index": 4,
+      "label": "I",
+      "bbox_in_crop": [
+        35,
+        0,
+        4,
+        4
+      ],
+      "confidence": 0.9021733403205872
+    },
+    {
+      "index": 5,
+      "label": "M",
+      "bbox_in_crop": [
+        44,
+        12,
+        5,
+        6
+      ],
+      "confidence": 0.3009754717350006
+    },
+    {
+      "index": 6,
+      "label": "P",
+      "bbox_in_crop": [
+        75,
+        3,
+        8,
+        12
+      ],
+      "confidence": 0.5785041451454163
+    },
+    {
+      "index": 7,
+      "label": "I",
+      "bbox_in_crop": [
+        0,
+        10,
+        14,
+        19
+      ],
+      "confidence": 0.2623205780982971
+    },
+    {
+      "index": 8,
+      "label": "I",
+      "bbox_in_crop": [
+        0,
+        20,
+        4,
+        5
+      ],
+      "confidence": 0.5685007572174072
+    },
+    {
+      "index": 9,
+      "label": "I",
+      "bbox_in_crop": [
+        58,
+        23,
+        5,
+        6
+      ],
+      "confidence": 0.23834338784217834
+    }
+  ],
+  "selected_candidate": 8,
+  "candidate_score_heuristic": 0.5521364275668073,
+  "confidence": [
+    0.92010897397995,
+    0.4208773672580719,
+    0.7554250359535217,
+    0.25470608472824097,
+    0.9021733403205872,
+    0.3009754717350006,
+    0.5785041451454163,
+    0.2623205780982971,
+    0.5685007572174072,
+    0.23834338784217834
+  ]
+}

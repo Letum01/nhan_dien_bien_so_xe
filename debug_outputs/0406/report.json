@@ -1,0 +1,129 @@
+{
+  "image": "dataset\\license_plate_dataset\\0\\images\\0406.jpg",
+  "proposal_count": 10,
+  "selected_box": [
+    202,
+    200,
+    151,
+    111
+  ],
+  "character_count": 9,
+  "raw_text": "IIIIIIIII",
+  "processed_text": "IIIIIIIII",
+  "status": "recognized",
+  "model": "cnn",
+  "characters": [
+    {
+      "index": 0,
+      "label": "I",
+      "bbox_in_crop": [
+        26,
+        3,
+        19,
+        44
+      ],
+      "confidence": 0.9926462173461914
+    },
+    {
+      "index": 1,
+      "label": "I",
+      "bbox_in_crop": [
+        48,
+        0,
+        18,
+        49
+      ],
+      "confidence": 0.9937426447868347
+    },
+    {
+      "index": 2,
+      "label": "I",
+      "bbox_in_crop": [
+        92,
+        4,
+        21,
+        47
+      ],
+      "confidence": 0.899551272392273
+    },
+    {
+      "index": 3,
+      "label": "I",
+      "bbox_in_crop": [
+        116,
+        5,
+        16,
+        47
+      ],
+      "confidence": 0.9728156924247742
+    },
+    {
+      "index": 4,
+      "label": "I",
+      "bbox_in_crop": [
+        10,
+        54,
+        19,
+        43
+      ],
+      "confidence": 0.9739907383918762
+    },
+    {
+      "index": 5,
+      "label": "I",
+      "bbox_in_crop": [
+        38,
+        55,
+        17,
+        43
+      ],
+      "confidence": 0.993529736995697
+    },
+    {
+      "index": 6,
+      "label": "I",
+      "bbox_in_crop": [
+        64,
+        57,
+        20,
+        43
+      ],
+      "confidence": 0.9718957543373108
+    },
+    {
+      "index": 7,
+      "label": "I",
+      "bbox_in_crop": [
+        100,
+        59,
+        12,
+        43
+      ],
+      "confidence": 0.9853816032409668
+    },
+    {
+      "index": 8,
+      "label": "I",
+      "bbox_in_crop": [
+        125,
+        42,
+        26,
+        61
+      ],
+      "confidence": 0.9210007190704346
+    }
+  ],
+  "selected_candidate": 3,
+  "candidate_score_heuristic": 0.5662743197396662,
+  "confidence": [
+    0.9926462173461914,
+    0.9937426447868347,
+    0.899551272392273,
+    0.9728156924247742,
+    0.9739907383918762,
+    0.993529736995697,
+    0.9718957543373108,
+    0.9853816032409668,
+    0.9210007190704346
+  ]
+}

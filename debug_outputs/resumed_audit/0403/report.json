@@ -1,0 +1,222 @@
+{
+  "image": "dataset\\license_plate_dataset\\0\\images\\0403.jpg",
+  "proposal_count": 17,
+  "selected_box": [
+    209,
+    207,
+    177,
+    122
+  ],
+  "character_count": 9,
+  "raw_text": "IIIIIIIII",
+  "processed_text": "IIIIIIIII",
+  "status": "ocr_prediction_only",
+  "model": "cnn",
+  "characters": [
+    {
+      "index": 0,
+      "label": "I",
+      "bbox_in_crop": [
+        26,
+        15,
+        22,
+        46
+      ],
+      "confidence": 0.994499921798706
+    },
+    {
+      "index": 1,
+      "label": "I",
+      "bbox_in_crop": [
+        50,
+        14,
+        21,
+        46
+      ],
+      "confidence": 0.8549022674560547
+    },
+    {
+      "index": 2,
+      "label": "I",
+      "bbox_in_crop": [
+        96,
+        11,
+        20,
+        48
+      ],
+      "confidence": 0.9701349139213562
+    },
+    {
+      "index": 3,
+      "label": "I",
+      "bbox_in_crop": [
+        121,
+        11,
+        22,
+        47
+      ],
+      "confidence": 0.979205846786499
+    },
+    {
+      "index": 4,
+      "label": "I",
+      "bbox_in_crop": [
+        32,
+        69,
+        21,
+        43
+      ],
+      "confidence": 0.9899091720581055
+    },
+    {
+      "index": 5,
+      "label": "I",
+      "bbox_in_crop": [
+        63,
+        68,
+        21,
+        44
+      ],
+      "confidence": 0.9918952584266663
+    },
+    {
+      "index": 6,
+      "label": "I",
+      "bbox_in_crop": [
+        93,
+        67,
+        19,
+        45
+      ],
+      "confidence": 0.971668004989624
+    },
+    {
+      "index": 7,
+      "label": "I",
+      "bbox_in_crop": [
+        126,
+        66,
+        21,
+        45
+      ],
+      "confidence": 0.9608621597290039
+    },
+    {
+      "index": 8,
+      "label": "I",
+      "bbox_in_crop": [
+        162,
+        67,
+        11,
+        36
+      ],
+      "confidence": 0.9995562434196472
+    }
+  ],
+  "ground_truth_used": false,
+  "production_pipeline": {
+    "selected_box": [
+      209,
+      207,
+      177,
+      122
+    ],
+    "raw_text": "IIIIIIIII",
+    "processed_text": "IIIIIIIII",
+    "confidences": [
+      0.994499921798706,
+      0.8549022674560547,
+      0.9701349139213562,
+      0.979205846786499,
+      0.9899091720581055,
+      0.9918952584266663,
+      0.971668004989624,
+      0.9608621597290039,
+      0.9995562434196472
+    ],
+    "status": "ocr_prediction_only",
+    "character_boxes": [
+      [
+        26,
+        15,
+        22,
+        46
+      ],
+      [
+        50,
+        14,
+        21,
+        46
+      ],
+      [
+        96,
+        11,
+        20,
+        48
+      ],
+      [
+        121,
+        11,
+        22,
+        47
+      ],
+      [
+        32,
+        69,
+        21,
+        43
+      ],
+      [
+        63,
+        68,
+        21,
+        44
+      ],
+      [
+        93,
+        67,
+        19,
+        45
+      ],
+      [
+        126,
+        66,
+        21,
+        45
+      ],
+      [
+        162,
+        67,
+        11,
+        36
+      ]
+    ],
+    "character_count": 9,
+    "display_text": "IIIIIIIII"
+  },
+  "selection_branch": "experimental_geometry_not_production",
+  "selected_candidate": 1,
+  "candidate_score_heuristic": 0.8512071050109324,
+  "confidence": [
+    0.994499921798706,
+    0.8549022674560547,
+    0.9701349139213562,
+    0.979205846786499,
+    0.9899091720581055,
+    0.9918952584266663,
+    0.971668004989624,
+    0.9608621597290039,
+    0.9995562434196472
+  ],
+  "artifacts": {
+    "input": "debug_outputs\\resumed_audit\\0403\\00_input.jpg",
+    "preprocess": "debug_outputs\\resumed_audit\\0403\\01_localization_edges.png",
+    "proposals": "debug_outputs\\resumed_audit\\0403\\02_proposals.jpg",
+    "baseline_crop": "debug_outputs\\resumed_audit\\0403\\02b_baseline_crop.jpg",
+    "selected_crop": "debug_outputs\\resumed_audit\\0403\\03_candidate_1_crop.jpg",
+    "rectified": "debug_outputs\\resumed_audit\\0403\\04_candidate_1_rectified.jpg",
+    "binary": "debug_outputs\\resumed_audit\\0403\\05_candidate_1_binary.png",
+    "character_strip": "debug_outputs\\resumed_audit\\0403\\06_character_strip.png",
+    "ocr_overlay": "debug_outputs\\resumed_audit\\0403\\07_selected_box_ocr.jpg"
+  }
+}

@@ -1,0 +1,3 @@
+﻿image,model,proposal_count,selected_box,character_count,raw_text,processed_text,status
+dataset\license_plate_dataset\0\images\0402.jpg,cnn,16,"[208, 192, 145, 101]",9,IILIIIIII,IILIIIIII,ocr_prediction_only
+dataset\license_plate_dataset\0\images\0403.jpg,cnn,17,"[209, 207, 177, 122]",9,IIIIIIIII,IIIIIIIII,ocr_prediction_only

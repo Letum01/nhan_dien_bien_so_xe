@@ -54,46 +54,44 @@ def extract_hog_features(
     )
     return features.astype(np.float32)
 
-def post_process_plate_text(raw_text: str) -> str:
+def post_process_plate_text(raw_text: str, confidences: Optional[List[float]] = None) -> str:
+    """Normalize OCR output; only correct ambiguous glyphs where syntax is plausible.
+
+    This deliberately uses a conservative common pattern (two digits, one letter,
+    one alphanumeric series character, then digits). Unknown formats and calls
+    without OCR confidence are returned unchanged rather than guessed.
+    ``confidences`` are optional per-character probabilities in [0, 1].
     """
-    Áp dụng quy tắc cú pháp biển số xe Việt Nam (Domain Heuristics):
-    - 2 ký tự đầu là MÃ TỈNH (bắt buộc là SỐ: ví dụ 51, 29, 30).
-    - Ký tự thứ 3 là SÊ-RI (bắt buộc là CHỮ: ví dụ A, B, C, F, G...).
-    - Các ký tự còn lại là SỐ THỨ TỰ (bắt buộc là SỐ: ví dụ 00530).
-    Tự động hiệu chỉnh các cặp ký tự dễ nhầm lẫn quang học (I <-> 1, O <-> 0, B <-> 8, S <-> 5).
-    """
-    if not raw_text or len(raw_text) < 6:
+    if not raw_text:
         return raw_text
+    text = "".join(raw_text.upper().split())
+    if not (7 <= len(text) <= 8) or not text.isalnum():
+        return text
+    if confidences is not None and len(confidences) != len(text):
+        raise ValueError("confidences must contain one value per OCR character")
+    if confidences is None:
+        return text
 
-    char_to_digit = {
-        'I': '1', 'L': '1', 'J': '1', 'T': '1',
-        'O': '0', 'D': '0', 'Q': '0', 'U': '0',
-        'B': '8', 'S': '5', 'Z': '2', 'G': '6', 'A': '4'
+    # For these common formats, positions 0-1 are numeric, position 2 is a
+    # series letter, and the remaining positions are numeric. Only ambiguous
+    # glyph substitutions are considered, and only with low confidence.
+    chars = list(text)
+    mappings = {
+        0: {"O": "0", "I": "1"}, 1: {"O": "0", "I": "1"},
+        2: {"0": "O", "1": "I", "8": "B", "5": "S", "2": "Z"},
     }
-    digit_to_char = {
-        '1': 'I', '0': 'O', '8': 'B', '5': 'S', '2': 'Z', '6': 'G', '4': 'A'
-    }
-
-    chars = list(raw_text)
-    n = len(chars)
-
-    # Nếu biển số có 7 đến 9 ký tự (dạng chuẩn của xe ô tô và mô tô Việt Nam)
-    if 7 <= n <= 9:
-        # Vị trí 0 và 1: Bắt buộc là số
-        for idx in [0, 1]:
-            if chars[idx] in char_to_digit:
-                chars[idx] = char_to_digit[chars[idx]]
-
-        # Vị trí 2: Bắt buộc là chữ cái
-        if chars[2] in digit_to_char:
-            chars[2] = digit_to_char[chars[2]]
-
-        # Các vị trí từ 3 trở đi (dãy số cuối): Bắt buộc là số
-        for idx in range(3, n):
-            if chars[idx] in char_to_digit:
-                chars[idx] = char_to_digit[chars[idx]]
-
-    return "".join(chars)
+    for index in range(3, len(text)):
+        mappings[index] = {"O": "0", "I": "1", "B": "8", "S": "5", "Z": "2"}
+    for index, mapping in mappings.items():
+        if not 0.0 <= float(confidences[index]) <= 1.0:
+            raise ValueError("confidences must be probabilities in [0, 1]")
+        if confidences[index] < 0.90:
+            chars[index] = mapping.get(chars[index], chars[index])
+    candidate = "".join(chars)
+    if (candidate[:2].isdigit() and candidate[2].isalpha()
+            and candidate[3:].isdigit()):
+        return candidate
+    return text
 
 
 

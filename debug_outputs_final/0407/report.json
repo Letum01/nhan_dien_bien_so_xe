@@ -1,0 +1,14 @@
+{
+  "image": "dataset\\license_plate_dataset\\0\\images\\0407.jpg",
+  "proposal_count": 7,
+  "selected_box": null,
+  "character_count": 5,
+  "raw_text": "",
+  "processed_text": "",
+  "status": "low_quality_candidates_rejected",
+  "model": "cnn",
+  "characters": [],
+  "ground_truth_used": false,
+  "selected_candidate": null,
+  "candidate_score_heuristic": 0.7075475624682541
+}

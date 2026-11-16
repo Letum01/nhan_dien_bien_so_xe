@@ -1,0 +1,22 @@
+# Virtual Environment (Rác cực kỳ nặng - không đưa lên GitHub)
+venv/
+.venv/
+env/
+ENV/
+
+# Python Cache & Bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Cấu hình IDE cá nhân
+.vscode/
+.idea/
+
+# File môi trường và dữ liệu nhạy cảm
+.env
+
+# Tùy chọn: Nếu không muốn đưa model weights đã huấn luyện lên GitHub thì mở comment dòng dưới:
+# saved_models/
+# dataset/

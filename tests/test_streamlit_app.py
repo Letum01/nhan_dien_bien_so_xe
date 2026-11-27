@@ -14,7 +14,7 @@ def test_app_renders_tabs_models_and_empty_history():
     app = AppTest.from_file(str(APP), default_timeout=60).run()
     assert not app.exception
     assert len(app.tabs) == 3
-    assert len(app.selectbox) == 1
+    assert len(app.selectbox) == 2
     assert "Chưa có lịch sử" in " ".join(item.value for item in app.info)
 
 
@@ -24,7 +24,7 @@ def test_model_selection_reruns_without_exception():
         "CNN (Deep Learning)",
         "SVM (HOG + Support Vector)",
         "Random Forest (HOG + Ensembles)",
-        "PaddleOCR (chuỗi trực tiếp)",
+        "Ensemble (Majority — thử nghiệm)",
     ):
         app.selectbox[0].select(choice).run()
         assert not app.exception

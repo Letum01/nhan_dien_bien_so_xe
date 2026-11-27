@@ -19,7 +19,7 @@ def main():
         image = cv2.imread(str(root / f"dataset/license_plate_dataset/0/images/{name}.jpg"))
         trace = {}
         start = time.perf_counter()
-        text, overlay, crop, _ = end_to_end_pipeline(image, "paddle", trace=trace)
+        text, overlay, crop, _ = end_to_end_pipeline(image, "paddle", trace=trace, allow_research_ocr=True)
         total = time.perf_counter() - start
         report = {"image": name, "text": text, "box": trace.get("selected_box"),
                   "detection_selection_seconds": trace.get("detection_selection_seconds"),

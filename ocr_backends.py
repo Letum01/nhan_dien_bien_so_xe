@@ -62,7 +62,19 @@ def recognize_crop(crop: np.ndarray, backend: str, models=None, segments=None) -
     try:
         if crop is None or crop.size == 0:
             raise ValueError("Empty plate crop")
-        if backend == "paddle":
+        if backend == "ensemble":
+            from segmentation import segment_characters
+            from ensemble_recognition import recognize_ensemble
+            segments = segment_characters(crop) if segments is None else segments
+            votes = recognize_ensemble([char for char, _ in segments], models)
+            result.raw_text = votes.raw_text
+            result.text = votes.raw_text if votes.status == "prediction" else ""
+            result.status = votes.status
+            result.tokens = [{"index": i, "text": ch, "uncertain": i in votes.uncertain_positions}
+                             for i, ch in enumerate(votes.raw_text)]
+            result.timings["method"] = votes.method
+            result.timings["members"] = votes.members
+        elif backend == "paddle":
             if not paddle_available():
                 raise ImportError("Paddle environment missing; install requirements-paddle.txt in .venv-paddle")
             ok, buffer = cv2.imencode(".png", crop)
@@ -84,7 +96,8 @@ def recognize_crop(crop: np.ndarray, backend: str, models=None, segments=None) -
             result.raw_text = raw
             result.text = post_process_plate_text(raw, scores)
             result.tokens = [{"text": ch, "score": scores[i] if scores else None} for i, ch in enumerate(raw)]
-        result.status = "prediction" if result.text else "unreadable"
+        if backend != "ensemble":
+            result.status = "prediction" if result.text else "unreadable"
     except Exception as exc:
         logging.getLogger(__name__).exception("OCR backend %s failed", backend)
         result.status = "error"

@@ -36,8 +36,14 @@ def test_real_jpeg_upload_inference_for_three_legacy_models():
     data = (ROOT / "dataset/license_plate_dataset/0/images/0402.jpg").read_bytes()
     with patch("streamlit.delta_generator.DeltaGenerator.file_uploader", return_value=uploaded(data, "0402.jpg")):
         app = AppTest.from_file(str(ROOT / "app.py"), default_timeout=60).run()
-        for choice in ("CNN (Deep Learning)", "SVM (HOG + Support Vector)", "Random Forest (HOG + Ensembles)"):
+        for choice in ("CNN (Deep Learning)", "SVM (HOG + Support Vector)", "Random Forest (HOG + Ensembles)", "Ensemble (Majority — thử nghiệm)"):
             app.selectbox[0].select(choice).run()
             assert not app.exception
             assert not app.error
             assert len(app.get("imgs")) >= 3
+        comparison = next(button for button in app.button if button.label.startswith("So sánh SVM"))
+        comparison.click().run()
+        assert not app.exception
+        assert len(app.dataframe) >= 1
+        frame = app.dataframe[0].value
+        assert set(frame["model"]) == {"svm", "rf", "cnn", "ensemble"}

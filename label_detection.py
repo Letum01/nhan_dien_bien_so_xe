@@ -16,6 +16,8 @@ def validate_annotation(row):
     if image is None:
         raise ValueError("Unreadable source image")
     height, width = image.shape[:2]
+    from dataset_validation import validate_boxes
+    validate_boxes(row["boxes"], width, height)
     for box in row["boxes"]:
         if len(box) != 4:
             raise ValueError("Boxes must be [x,y,width,height]")
@@ -40,6 +42,8 @@ def export_yolo(manifest: Path, destination: Path):
         images.add(row["image_path"])
     if not rows or set(row["split"] for row in rows) != {"train", "val", "test"}:
         raise ValueError("Need reviewed train, val and test annotations")
+    from dataset_validation import check_split_leakage
+    check_split_leakage(rows, ROOT)
     destination.mkdir(parents=True, exist_ok=False)
     for index, row in enumerate(rows):
         source = ROOT / row["image_path"]
@@ -57,11 +61,97 @@ def export_yolo(manifest: Path, destination: Path):
     config = {"path": str(destination.resolve()), "train": "images/train", "val": "images/val",
               "test": "images/test", "names": ["license_plate"]}
     (destination / "data.yaml").write_text(json.dumps(config, indent=2), encoding="utf-8")
+    (destination / "manifest.json").write_text(json.dumps({"rows":rows,"split_policy":"human_assigned_group_validated","seed":42},indent=2),encoding="utf-8")
 
 
 def ui():
+    from annotation_ui import run
+    run()
+
+
+def annotation_ui():
     import streamlit as st
+    from PIL import Image
+    from streamlit_drawable_canvas import st_canvas
+    from annotation_store import AnnotationStore, image_id, canvas_boxes
     st.title("Gắn nhãn bounding box biển số bằng người")
+    store = AnnotationStore(ROOT / "data" / "annotations.sqlite3")
+    sources = sorted((ROOT / "dataset" / "license_plate_dataset").glob("*/images/*.jpg"))
+    if not sources:
+        st.warning("Không có ảnh nguồn")
+        return
+    selected = Path(st.selectbox("Ảnh nguồn", [str(p) for p in sources], key="source_image"))
+    identity = image_id(selected)
+    previous = store.latest(identity) or {}
+    image = Image.open(selected).convert("RGB")
+    scale = st.slider("Tỷ lệ hiển thị", .25, 2.0, 1.0, .25)
+    mode = st.radio("Thao tác", ["rect", "transform"], horizontal=True)
+    st.caption("rect: vẽ box; transform: di chuyển/resize; dùng công cụ canvas để xóa/undo. Chỉ box axis-aligned. Save draft trước khi chuyển ảnh.")
+    show_proposals = st.checkbox("Xem gợi ý OpenCV (không tự duyệt)")
+    if show_proposals:
+        import numpy as np
+        from localization import locate_license_plates
+        preview = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2BGR)
+        for _, (x,y,w,h), _ in locate_license_plates(preview):
+            cv2.rectangle(preview,(x,y),(x+w,y+h),(0,180,255),2)
+        st.image(cv2.cvtColor(preview,cv2.COLOR_BGR2RGB),caption="Proposal màu vàng, không phải ground truth")
+    objects = [{"type":"rect","left":x*scale,"top":y*scale,"width":w*scale,"height":h*scale,
+                "fill":"rgba(0,180,0,0.12)","stroke":"green","strokeWidth":2}
+               for x,y,w,h in previous.get("boxes", [])]
+    canvas = st_canvas(background_image=image, width=int(image.width*scale),height=int(image.height*scale),
+                       drawing_mode=mode, stroke_width=2, stroke_color="green",
+                       initial_drawing={"objects":objects}, update_streamlit=True,
+                       key=f"boxes_{identity}_{scale}")
+    group = st.text_input("source_group", value=previous.get("source_group", ""), key=f"group_{identity}")
+    split = st.selectbox("Split", ["train","val","test"], index=["train","val","test"].index(previous.get("split","train")),key=f"split_{identity}")
+    status = st.selectbox("Review status", ["unlabeled","proposed","needs_review","rejected","reviewed"],key=f"status_{identity}")
+    confirmed = st.checkbox("Tôi đã xem tất cả box; [] xác nhận không có biển",key=f"confirm_{identity}")
+    if canvas.json_data is not None:
+        try:
+            boxes = canvas_boxes(canvas.json_data.get("objects",[]),scale,image.width,image.height)
+        except ValueError as exc:
+            st.error(str(exc)); return
+        row = {"image_id":identity,"image_path":str(selected.relative_to(ROOT)),"boxes":boxes,
+               "source_group":group,"split":split,"review_status":status,"confirmed_by_user":confirmed}
+        if st.button("Lưu phiên bản / draft"):
+            try:
+                if status=="reviewed":
+                    if not group or not confirmed:
+                        raise ValueError("Reviewed requires group and explicit human confirmation")
+                    # Maintain existing exporter-compatible manifest; immutable history stays in SQLite.
+                    manifest=ROOT/"dataset"/"reviewed_detection.json"
+                    rows=json.loads(manifest.read_text(encoding="utf-8")) if manifest.exists() else []
+                    if any(old["source_group"]==group and old["split"]!=split for old in rows):
+                        raise ValueError("Group exists in another split; reviewed export not changed")
+                    validate_annotation({**row,"human_reviewed":True})
+                saved=store.save(row,expected_version=previous.get("annotation_version",0))
+                if status!="reviewed":
+                    # Revoking review must also revoke eligibility in the legacy
+                    # exporter manifest; SQLite retains the old reviewed revision.
+                    manifest=ROOT/"dataset"/"reviewed_detection.json"
+                    if manifest.exists():
+                        rows=json.loads(manifest.read_text(encoding="utf-8"))
+                        rows=[old for old in rows if old["image_path"]!=row["image_path"]]
+                        temporary=manifest.with_suffix(".tmp")
+                        temporary.write_text(json.dumps(rows,ensure_ascii=False,indent=2),encoding="utf-8")
+                        temporary.replace(manifest)
+                if status=="reviewed":
+                    reviewed_row={**saved,"human_reviewed":True}
+                    rows=[old for old in rows if old["image_path"]!=row["image_path"]]+[reviewed_row]
+                    temporary=manifest.with_suffix(".tmp")
+                    temporary.write_text(json.dumps(rows,ensure_ascii=False,indent=2),encoding="utf-8")
+                    temporary.replace(manifest)
+                st.success("Đã lưu phiên bản; có thể tải lại để tiếp tục")
+            except ValueError as exc:
+                st.error(str(exc))
+    with st.expander("Lịch sử annotation"):
+        st.json(store.history(identity))
+    return
+
+
+def legacy_json_ui():
+    """Retained numeric-box editor for environments without canvas."""
+    import streamlit as st
     st.info("Nhập từng box [x,y,width,height]. Gắn TẤT CẢ biển trong ảnh. [] chỉ dùng cho ảnh thực sự không có biển. Không lưu nhãn từ dự đoán.")
     sources = sorted((ROOT / "dataset" / "license_plate_dataset").glob("*/images/*.jpg"))
     selected = Path(st.selectbox("Ảnh", [str(p) for p in sources]))

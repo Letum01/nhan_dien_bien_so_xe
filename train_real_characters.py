@@ -69,6 +69,20 @@ def main():
     test_features = np.array([extract_hog_features(image.squeeze()) for image in tx])
     report = evaluate_models(trained, tx, test_features, ty)
     (destination / "reviewed_test_metrics.json").write_text(json.dumps(report, indent=2), encoding="utf-8")
+    from main import recognize_characters
+    from dataset import CHARACTER_CLASSES, IDX_TO_CLASS
+    from sklearn.metrics import confusion_matrix, classification_report
+    expected = [IDX_TO_CLASS[int(label)] for label in ty]
+    details = {}
+    for backend in ("svm", "rf", "cnn"):
+        predicted = list(recognize_characters([image.squeeze() for image in tx], backend, trained))
+        details[backend] = {
+            "confusion_matrix": confusion_matrix(expected, predicted, labels=CHARACTER_CLASSES).tolist(),
+            "class_order": CHARACTER_CLASSES,
+            "classification_report": classification_report(expected, predicted, labels=CHARACTER_CLASSES,
+                                                             output_dict=True, zero_division=0),
+        }
+    (destination / "reviewed_test_per_class.json").write_text(json.dumps(details, indent=2), encoding="utf-8")
 
 
 if __name__ == "__main__":

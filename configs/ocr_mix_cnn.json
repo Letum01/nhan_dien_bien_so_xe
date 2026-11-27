@@ -1,0 +1,1 @@
+{"variant":"synthetic_plus_real","seed":42,"real_domain_fraction":0.5,"epochs":30,"batch":16,"learning_rate":0.001,"finetune_baseline":false}

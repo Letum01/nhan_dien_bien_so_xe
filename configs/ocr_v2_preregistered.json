@@ -1,0 +1,11 @@
+{
+  "seed": 42,
+  "synthetic_per_class": 200,
+  "domain_real_fraction": 0.5,
+  "search": "3-fold GroupKFold on real train, fixed synthetic train in every fold; select by mean real fold accuracy, first candidate on tie",
+  "svm": [{"C": 10, "gamma": "scale"}, {"C": 4, "gamma": 0.002, "class_weight": "balanced"}],
+  "rf": [{"n_estimators": 100, "max_depth": 20}, {"n_estimators": 140, "max_depth": 24, "min_samples_leaf": 2, "max_features": 0.22}],
+  "cnn": {"epochs": 8, "batch": 64, "learning_rate": 0.0003, "patience": 2, "initialization": "CNN Mix V1", "holdout": "first train GroupKFold split"},
+  "promotion": "Experimental UI only if V2 CNN improves exact on the fixed 12 development plates without increasing CER; do not select from test",
+  "detectors": "unchanged; same cached box geometry for both OCR model sets"
+}

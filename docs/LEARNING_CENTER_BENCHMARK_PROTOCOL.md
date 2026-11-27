@@ -1,0 +1,7 @@
+# Benchmark Learning Center — thiết kế v1 (BLOCKED, chưa đóng băng corpus)
+
+- Giữ nguyên Pilot/New10/Final Test hiện có. Không dùng development cũ để chỉnh alignment. Checkpoint, threshold, thứ tự đọc và preprocessing cố định; lưu hash và phiên bản policy trước khi chấm.
+- Tiếp nhận ảnh theo consent và quyền sử dụng đã kiểm tra. Xác minh capture/vehicle/group trước khi chia; không suy ra nhóm từ filename. Kiểm tra group/SHA và pHash ≤6 đối với inventory 2.932 ảnh, registry train/dev, Pilot và ứng viên Final Test (gồm New10). Khi chuẩn bị freeze phải làm mới inventory từ pixel gốc, kiểm tra các nhóm/ảnh gần trùng thủ công theo bằng chứng nguồn, và kiểm tra lại all-pairs cả trong corpus mới. Từ chối nguồn hoặc trạng thái còn không rõ.
+- Tách train/dev/test theo nhóm nguồn trước khi fit. Khóa manifest có hash ảnh, group, split, quyền, revision, normalization và checkpoint; test phải chưa từng hiện prediction cho người ghi text. Không đổi mục đích sau khi xem kết quả.
+- Text-only: exact / toàn bộ ảnh và CER / toàn bộ ký tự GT, kể cả detection miss; tổng hợp số ảnh và group. Box alignment: cần box đáng tin độc lập, ghép một-một IoU ≥0,5, báo cáo coverage, false acceptance và độ chính xác lớp/vị trí; không gán box chuẩn từ text hoặc teacher.
+- Chỉ xem xét snapshot train khi rights/provenance và split đã xác minh, leakage PASS, quality gate trên cohort độc lập PASS và đã khóa benchmark. UI không tự mở gate, không có pipeline fit tự động. `PSEUDO_LABEL` và `TRAIN_ELIGIBLE` chưa được cấp trong bản này.

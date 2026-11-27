@@ -23,3 +23,22 @@ data/
 # Tùy chọn: Nếu không muốn đưa model weights đã huấn luyện lên GitHub thì mở comment dòng dưới:
 # saved_models/
 # dataset/
+
+# Local datasets, experiment artifacts and credentials
+/external_datasets/
+/dataset/
+/datasets/
+/experiments/
+/reports/
+/debug_outputs*/
+/saved_models/
+/pretrained/
+/runs/
+/.streamlit/secrets.toml
+*.sqlite3
+*.sqlite3-*
+*.db
+*.zip
+*.pt
+*.keras
+*.joblib

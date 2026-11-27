@@ -62,7 +62,9 @@ def preprocess_plate(plate_img: np.ndarray) -> np.ndarray:
 
 def segment_characters(
     plate_img: np.ndarray,
-    target_size: Tuple[int, int] = (32, 32)
+    target_size: Tuple[int, int] = (32, 32),
+    trace: Optional[dict] = None,
+    binary_override: Optional[np.ndarray] = None,
 ) -> List[Tuple[np.ndarray, Tuple[int, int, int, int]]]:
     """
     Phân tách từng ký tự (chữ và số) trong ảnh biển số xe.
@@ -81,17 +83,21 @@ def segment_characters(
     if plate_img is None or plate_img.size == 0:
         return []
 
-    try:
-        binary_plate = preprocess_plate(plate_img)
-    except Exception:
-        return []
+    # Invalid preprocessing must be visible to caller/UI rather than silently
+    # reported as an empty successful segmentation.
+    binary_plate = preprocess_plate(plate_img) if binary_override is None else binary_override.copy()
+    if binary_plate.ndim != 2 or binary_plate.dtype != np.uint8 or binary_plate.shape != plate_img.shape[:2]:
+        raise ValueError('Expected uint8 binary image matching the crop dimensions')
+    if trace is not None:
+        trace.clear()
+        trace.update({'contours': [], 'binary': binary_plate, 'final_boxes': []})
 
     plate_h, plate_w = binary_plate.shape[:2]
     contours, _ = cv2.findContours(binary_plate.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
     valid_chars: List[Tuple[int, int, int, int, np.ndarray]] = []
 
-    for cnt in contours:
+    for contour_index, cnt in enumerate(contours):
         x, y, w, h = cv2.boundingRect(cnt)
         aspect_ratio = float(w) / float(h)
         h_ratio = float(h) / float(plate_h)
@@ -101,6 +107,19 @@ def segment_characters(
         # - Ký tự không quá nhỏ và không chiếm toàn bộ biển số
         # - Chiều cao thường từ 25% đến 95% chiều cao biển (hoặc dòng)
         # - Tỷ lệ w/h của ký tự nằm trong khoảng 0.15 đến 1.1 (trừ chữ 1 rất mỏng hoặc W hơi rộng)
+        reasons=[]
+        if not (0.12 <= h_ratio <= 0.95):reasons.append('height_ratio_outside_0.12_0.95')
+        if not (0.02 <= w_ratio <= 0.60):reasons.append('width_ratio_outside_0.02_0.60')
+        if not (0.12 <= aspect_ratio <= 1.25):reasons.append('aspect_outside_0.12_1.25')
+        edge_fragment=((x <= max(2, plate_w*.01) or x+w >= plate_w*.99)
+                       and (h >= plate_h*.45 or w < h*.24))
+        if edge_fragment:reasons.append('edge_fragment_filter')
+        if trace is not None:
+            trace['contours'].append({'index':contour_index,'bbox':[x,y,w,h],
+                                      'area':float(cv2.contourArea(cnt)), 'aspect_ratio':aspect_ratio,
+                                      'height_ratio':h_ratio,'width_ratio':w_ratio,
+                                      'status':'rejected' if reasons else 'candidate_before_merge',
+                                      'reasons':reasons})
         if not (0.12 <= h_ratio <= 0.95):
             continue
         if not (0.02 <= w_ratio <= 0.60):
@@ -189,4 +208,16 @@ def segment_characters(
         sorted_chars = sorted(valid_chars, key=lambda item: item[0])
 
     # Trả về kết quả: (char_img, (x, y, w, h))
-    return [(char[4], (char[0], char[1], char[2], char[3])) for char in sorted_chars]
+    output = [(char[4], (char[0], char[1], char[2], char[3])) for char in sorted_chars]
+    if trace is not None:
+        trace['final_boxes']=[list(box) for _,box in output]
+        trace['is_two_lines']=bool(is_two_lines)
+        for entry in trace['contours']:
+            if not entry['reasons']:
+                matched=[i for i,(_,box) in enumerate(output)
+                         if box[0]<=entry['bbox'][0] and box[1]<=entry['bbox'][1]
+                         and box[0]+box[2]>=entry['bbox'][0]+entry['bbox'][2]
+                         and box[1]+box[3]>=entry['bbox'][1]+entry['bbox'][3]]
+                entry['final_indices']=matched
+                entry['status']='kept_or_merged' if matched else 'filtered_after_candidate_stage'
+    return output

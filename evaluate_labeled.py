@@ -61,7 +61,8 @@ def evaluate_manifest(manifest: Path, model_name: str = "cnn", crop_mode: bool =
                 continue
             if not models_loaded:
                 models = load_trained_models(str(Path(__file__).resolve().parent / "saved_models"))
-                if models is None or models.get(model_name) is None:
+                required = ("svm", "rf", "cnn", "scaler") if model_name == "ensemble" else (model_name,)
+                if models is None or any(models.get(name) is None for name in required):
                     raise RuntimeError(f"Model unavailable: {model_name}")
                 models_loaded = True
             path = Path(sample["image_path"])
@@ -100,7 +101,7 @@ def evaluate_manifest(manifest: Path, model_name: str = "cnn", crop_mode: bool =
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("manifest", nargs="?", default="dataset/evaluation_ground_truth_template.csv")
-    parser.add_argument("--model", choices=["cnn", "svm", "rf", "paddle"], default="cnn")
+    parser.add_argument("--model", choices=["cnn", "svm", "rf", "ensemble"], default="cnn")
     parser.add_argument("--crop-mode", action="store_true", help="Evaluate OCR directly on reviewed plate crops, bypass detection")
     parser.add_argument("--output", default="evaluation_results.json")
     args = parser.parse_args()

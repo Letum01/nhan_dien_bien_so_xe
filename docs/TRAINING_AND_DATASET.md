@@ -1,0 +1,7 @@
+# Huấn luyện và dữ liệu
+
+Không chạy huấn luyện trong lượt nghiệm thu. [Split B](../reports/SPLIT_B_FINAL.md) ghi Plate YOLOv8n: 46/12/3 ảnh train/val/test, 57 epoch (best 37), batch 4, imgsz 640, seed 42, RTX 2060. [Round 1](../reports/YOLO_CHARACTER_ROUND1_REPORT.md) ghi Character YOLOv8n một lớp: 46 crop/370 box train, 12 crop/99 box validation; 53 epoch (best 33), batch 4, imgsz 640. Cả hai fine-tune từ pretrained local. Test không dùng chọn cấu hình.
+
+OCR Mix dùng glyph synthetic và real theo [báo cáo SVM/RF](../reports/OCR_MIX_EXPERIMENT_01.md) và [CNN](../reports/OCR_MIX_EXPERIMENT_02.md). Dữ liệu synthetic mở rộng lớp; glyph người duyệt bổ sung độ lệch thực tế. SVM dùng HOG + scaler fit train-only, RF dùng HOG, CNN học trực tiếp pixel chuẩn hóa. Synthetic không thay thế test độc lập. Pseudo-label development được tách JSON với model hash/ngưỡng và cờ kiểm tra; không tự biến thành reviewed hoặc train production.
+
+Snapshot YOLO Character `datasets/yolo_character_round1` chỉ train/val. Pilot 3 biển/24 glyph và New10 10 biển/85 ký tự không đưa vào train. Khóa nhãn gồm SQLite revisions, kiểm tra source group/SHA/pHash và kiểm tra provenance độc lập; khác hash không chứng minh ảnh khác nguồn.

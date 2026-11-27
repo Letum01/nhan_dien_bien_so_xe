@@ -165,6 +165,7 @@ def end_to_end_pipeline(
     trace: Optional[Dict[str, Any]] = None,
     detector_type: str = "opencv",
     detector_weights: Optional[str] = None,
+    allow_research_ocr: bool = False,
 ) -> Tuple[str, np.ndarray, Optional[np.ndarray], List[np.ndarray]]:
     """
     Quy trình khép kín (End-to-End ALPR Pipeline):
@@ -174,6 +175,8 @@ def end_to_end_pipeline(
     4. Nhận diện ký tự bằng mô hình (OCR Classification).
     5. Vẽ hộp và ghi kết quả chuỗi ký tự nhận diện lên ảnh.
     """
+    if model_type not in ("svm", "rf", "cnn", "ensemble") and not (allow_research_ocr and model_type == "paddle"):
+        raise ValueError("Product recognition supports only SVM, RF, CNN and Ensemble")
     if isinstance(image_path_or_bgr, (str, os.PathLike)):
         image = cv2.imread(image_path_or_bgr)
         if image is None:
@@ -201,8 +204,17 @@ def end_to_end_pipeline(
             raise ValueError("YOLO requires verified license-plate weights")
         from yolo_detector import detect_yolo
         proposals = detect_yolo(image, detector_weights)
+    elif detector_type == 'yolo_isolated':
+        from yolo_ui_bridge import detect
+        proposals=detect(image,detector_weights)
     else:
         raise ValueError(f"Unsupported detector: {detector_type}")
+    if detector_type in ('yolo','yolo_isolated'):
+        for _,(dx,dy,dw,dh),score in proposals:
+            cv2.rectangle(annotated,(dx,dy),(dx+dw,dy+dh),(0,180,255),2)
+            cv2.putText(annotated,f'YOLO {score:.3f}',(dx,max(15,dy-5)),cv2.FONT_HERSHEY_SIMPLEX,.5,(0,180,255),1)
+        if trace is not None:
+            trace['detections']=[{'bbox':box,'confidence':float(score)} for _,box,score in proposals]
     viable = []
     for crop, box, score in proposals:
         h_candidate, w_candidate = crop.shape[:2]
@@ -218,6 +230,9 @@ def end_to_end_pipeline(
     if viable:
         viable.sort(key=lambda item: item[0], reverse=True)
         _, plate_crop, bbox, segmented = viable[0]
+    elif detector_type in ('yolo','yolo_isolated') and proposals:
+        plate_crop,bbox,_=max(proposals,key=lambda p:p[2])
+        segmented=segment_characters(plate_crop)
     else:
         plate_crop, bbox = locate_license_plate(image) if detector_type == "opencv" else (None, None)
         segmented = segment_characters(plate_crop) if plate_crop is not None else []
@@ -228,7 +243,7 @@ def end_to_end_pipeline(
 
     if plate_crop is None or bbox is None:
         h, w = image.shape[:2]
-        if 1.2 <= (w / h) <= 6.5 and h < 300 and 6 <= len(segment_characters(image)) <= 11:
+        if detector_type == "opencv" and 1.2 <= (w / h) <= 6.5 and h < 300 and 6 <= len(segment_characters(image)) <= 11:
             plate_crop = image.copy()
             bbox = (0, 0, w, h)
             segmented = segment_characters(plate_crop)
@@ -241,13 +256,15 @@ def end_to_end_pipeline(
                       "detection_selection_seconds": time.perf_counter() - detection_started})
     cv2.rectangle(annotated, (x, y), (x + w, y + h), (0, 255, 0), 3)
 
-    if model_type != "paddle" and (models_dict is None or models_dict.get(model_type.lower()) is None):
+    required_models = ("svm", "rf", "cnn", "scaler") if model_type == "ensemble" else (model_type,)
+    if model_type != "paddle" and (models_dict is None or any(models_dict.get(key) is None for key in required_models)):
         raise ValueError(f"Mô hình '{model_type}' không khả dụng")
 
-    if not segmented:
+    if not segmented or (detector_type in ('yolo','yolo_isolated') and not 6<=len(segmented)<=11):
         cv2.putText(annotated, "Plate Detected - No Chars", (x, max(30, y - 10)),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255), 2)
-        return "UNKNOWN (No Characters)", annotated, plate_crop, []
+        if trace is not None:trace['status']='segmentation_uncertain'
+        return "UNKNOWN (Segmentation Uncertain)", annotated, plate_crop, [s[0] for s in segmented]
 
     char_images = [item[0] for item in segmented]
     from ocr_backends import recognize_crop
@@ -255,8 +272,8 @@ def end_to_end_pipeline(
     if ocr.status == "error":
         raise RuntimeError(ocr.error)
     raw_text = ocr.raw_text
-    confidences = [token["score"] for token in ocr.tokens] if model_type != "paddle" else None
-    plate_text = ocr.text or "UNKNOWN (OCR Unreadable)"
+    confidences = [token.get("score") for token in ocr.tokens] if model_type not in ("paddle", "ensemble") else None
+    plate_text = ocr.text or ("UNKNOWN (Ensemble Disagreement)" if ocr.status == "uncertain" else "UNKNOWN (OCR Unreadable)")
     if trace is not None:
         trace.update({"raw_text": raw_text, "processed_text": plate_text,
                       "confidences": confidences, "status": "ocr_prediction_only" if ocr.text else "ocr_unreadable",

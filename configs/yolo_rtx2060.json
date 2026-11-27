@@ -1,0 +1,11 @@
+{
+  "epochs": 100,
+  "imgsz": 640,
+  "batch": 8,
+  "patience": 20,
+  "device": "0",
+  "amp": true,
+  "seed": 42,
+  "workers": 2,
+  "notes": "Start nano with trusted local pretrained weights. If OOM, explicitly rerun batch=4. Never silently fall back CPU. Dataset validator required."
+}

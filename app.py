@@ -4,6 +4,8 @@ Author: ALPR Team
 """
 
 import logging
+import os
+from pathlib import Path
 import time
 import pandas as pd
 from typing import Optional, Dict, Any
@@ -17,7 +19,7 @@ from localization import locate_license_plate
 from segmentation import segment_characters
 from database import RecognitionDatabase
 from image_io import decode_uploaded_image
-from ocr_backends import paddle_available
+from ocr_backends import recognize_crop
 
 logger = logging.getLogger(__name__)
 
@@ -60,21 +62,39 @@ model_type_map = {
     "CNN (Deep Learning)": "cnn",
     "SVM (HOG + Support Vector)": "svm",
     "Random Forest (HOG + Ensembles)": "rf",
-    "PaddleOCR (chuỗi trực tiếp)": "paddle",
+    "Ensemble (Majority — thử nghiệm)": "ensemble",
 }
 available_choices = [label for label, key in model_type_map.items() if models_dict and models_dict.get(key) is not None]
-available_choices.append("PaddleOCR (chuỗi trực tiếp)")
+if models_dict and all(models_dict.get(key) is not None for key in ("svm", "rf", "cnn", "scaler")):
+    available_choices.append("Ensemble (Majority — thử nghiệm)")
 if not available_choices:
     st.sidebar.warning("Không có mô hình nhận dạng khả dụng; thêm trọng số đã huấn luyện vào saved_models.")
     available_choices = list(model_type_map)
 model_choice = st.sidebar.selectbox("Chọn mô hình phân loại ký tự:", options=available_choices)
 selected_model_type = model_type_map[model_choice]
-if selected_model_type == "paddle" and not paddle_available():
-    st.sidebar.warning("Chưa cài môi trường Paddle. Xem requirements-paddle.txt và README.")
+detector_options = ["OpenCV"]
+from yolo_ui_bridge import available as round2_available, CHECKPOINT as ROUND2_CHECKPOINT
+if round2_available():
+    detector_options.append("YOLO vòng 2 — thử nghiệm")
+yolo_weights = os.environ.get("ALPR_YOLO_WEIGHTS", "")
+if yolo_weights and Path(yolo_weights).is_file():
+    from importlib.util import find_spec
+    if find_spec("ultralytics") is not None:
+        detector_options.append("YOLO")
+detector_choice = st.sidebar.selectbox("Detector", detector_options)
+detector_backend=detector_choice.lower()
+if detector_choice=="YOLO vòng 2 — thử nghiệm":
+    detector_backend="yolo_isolated"
+    yolo_weights=str(ROUND2_CHECKPOINT)
+    st.sidebar.caption("Checkpoint split B; confidence cố định 0.4. Chạy venv YOLO riêng; chưa là detector mặc định.")
+if len(detector_options) == 1:
+    st.sidebar.caption("YOLO chưa khả dụng: cần ultralytics và ALPR_YOLO_WEIGHTS trỏ tới checkpoint biển số đã xác minh.")
+if selected_model_type == "ensemble":
+    st.sidebar.warning("Majority là baseline thử nghiệm, chưa chứng minh tốt hơn model đơn. 3 phiếu khác nhau → UNKNOWN. Đồng thuận không đồng nghĩa chính xác.")
 
 if models_dict is None:
     st.sidebar.error(" Chưa tìm thấy mô hình trong thư mục `saved_models`!")
-    st.sidebar.info("Vui lòng chạy `python main.py` trong terminal để huấn luyện và lưu mô hình.")
+    st.sidebar.info("Cung cấp model hợp lệ hoặc dùng train_real_characters.py với dữ liệu thật đã duyệt; không ghi đè model gốc.")
 else:
     st.sidebar.success("Đã nạp: " + ", ".join(key.upper() for key in ("cnn", "svm", "rf") if models_dict.get(key) is not None))
 
@@ -102,7 +122,8 @@ with tab1:
             try:
                 recognition_trace = {}
                 plate_text, annotated, plate_crop, char_images = end_to_end_pipeline(
-                    image_bgr, model_type=selected_model_type, models_dict=models_dict, trace=recognition_trace
+                    image_bgr, model_type=selected_model_type, models_dict=models_dict, trace=recognition_trace,
+                    detector_type=detector_backend, detector_weights=yolo_weights or None,
                 )
             except (ValueError, KeyError, cv2.error) as exc:
                 logger.exception("ALPR pipeline rejected uploaded image")
@@ -118,7 +139,10 @@ with tab1:
             st.subheader("2. Kết quả nhận diện trên xe")
             st.image(cv2.cvtColor(annotated, cv2.COLOR_BGR2RGB), use_column_width=True)
             st.success(f"Biển số: `{plate_text}`")
+            st.caption(f"OCR gốc: {recognition_trace.get('raw_text', '')}")
             st.caption(f"Thời gian xử lý: {elapsed:.3f} giây")
+            if recognition_trace.get('detections'):
+                st.write('YOLO detections (xywh / model confidence, không phải OCR confidence):',recognition_trace['detections'])
             if st.button("Lưu kết quả vào lịch sử"):
                 status = "recognized" if not plate_text.startswith("UNKNOWN") else "not_found"
                 database.add(recognition_trace.get("raw_text", ""), plate_text, selected_model_type,
@@ -148,6 +172,23 @@ with tab1:
             else:
                 st.info("Chưa có ký tự nào được phân tách.")
 
+        if plate_crop is not None and st.button("So sánh SVM / RF / CNN / Ensemble trên cùng crop"):
+            rows = []
+            segments = recognition_trace.get("segments", [])
+            for backend in ("svm", "rf", "cnn", "ensemble"):
+                comparison = recognize_crop(plate_crop, backend, models_dict, segments)
+                rows.append({"model": backend, "raw": comparison.raw_text, "text": comparison.text,
+                             "status": comparison.status, "seconds": comparison.seconds,
+                             "error": comparison.error})
+            st.dataframe(pd.DataFrame(rows), hide_index=True, use_container_width=True)
+        if st.button('OCR Diagnostics — YOLO vòng 2 (lưu artifact)'):
+            from ocr_diagnostics import render
+            with st.spinner('Đang tạo diagnostics baseline và biến thể; không sửa model...'):
+                try:render(image_bgr,models_dict)
+                except Exception as exc:
+                    logger.exception('OCR Diagnostics failed')
+                    st.error(f'Diagnostics lỗi: {type(exc).__name__}: {exc}')
+
     else:
         st.info(" Hãy tải lên một ảnh phương tiện giao thông từ thanh bên trái để bắt đầu nhận diện.")
 
@@ -172,7 +213,7 @@ with tab3:
           - Đánh giá trên Test set: Accuracy, Precision, Recall, Macro F1-score, Confusion Matrix.
         """
     )
-    st.caption("PaddleOCR chạy trong worker riêng, nhận trực tiếp chuỗi từ crop. Confidence là điểm model chưa hiệu chuẩn. Video, camera và YOLO chưa được bật.")
+    st.caption("Sản phẩm: OpenCV/YOLO → segmentation → SVM/RF/CNN/Ensemble. Không sử dụng OCR bên ngoài. YOLO cần checkpoint biển số đã xác minh. Weighted/soft voting chưa bật khi chưa có validation/calibration.")
 
 with tab2:
     query = st.text_input("Tìm theo biển số")

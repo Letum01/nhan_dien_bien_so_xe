@@ -1,0 +1,2 @@
+# Install in .venv after requirements.txt. Chromium is installed separately.
+playwright==1.48.0

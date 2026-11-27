@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "status": "BLOCKED_PENDING_APPROVAL_AND_FROZEN_MANIFEST",
+  "seed": 42,
+  "required_before_fitting": [
+    "Written permission covering the specific archives, underlying image sources and academic training",
+    "Documented source groups supported by capture, vehicle or session evidence, not inferred from disjoint hashes",
+    "Annotation semantic audit and credible independent ground truth for evaluation",
+    "New immutable train, development and test manifest with hashes, no verified-group overlap and no unresolved SHA256, pHash or plate-crop overlap candidates",
+    "Exclude protected validation, Pilot, New10 and Final Test images and related groups from all new fitting, augmentation and model selection",
+    "Compare the new benchmark against the provenance of each baseline checkpoint, not only the new training manifest"
+  ],
+  "split_target": {"train": 0.7, "development": 0.15, "test": 0.15},
+  "split_rule": "Group by verified source and duplicate components before splitting. Abort when group provenance or support is inadequate. Freeze IDs before tuning. Existing archive split names and anonymous duplicate components do not establish independence.",
+  "experiments": {
+    "classifier_order": ["CNN 32x32", "Linear and RBF SVM", "Random Forest", "48x48 or 64x64 only if raw resolution and development errors warrant"],
+    "checkpoint_selection": "Choose within train source-group folds and development only. Fit transforms and scaler within training folds. For SVM normalize sample weights to mean 1. Declare any pretrained extractor overlap with held-out folds.",
+    "cnn_initial": {"device": "cuda:0", "image_size": 32, "batch_initial": 32, "optimizer": "AdamW", "loss": "cross_entropy", "amp_if_smoke_passes": true, "max_epochs": 60, "patience": 10, "scheduler": "ReduceLROnPlateau", "horizontal_flip": false, "vertical_flip": false},
+    "detector_order": ["Keep YOLO Plate Round 2 and Character Round 1 for classifier comparisons", "One-class YOLOv8n Character after OCR readiness", "Plate detector only on verified vehicle-image labels"]
+  },
+  "baselines": ["CNN Mix V1", "SVM Fusion", "RF Fusion", "YOLO Character Round 1", "YOLO Plate Round 2"],
+  "tracks": {
+    "clean_glyph": "Reviewed classes and boxes; accuracy, macro F1 over classes with support, per-class precision/recall, confusion matrix; report classes without support separately.",
+    "plate_crop": "Verified crop and text; exact match, CER, omitted and extra glyphs, matched glyph accuracy, IoU>=0.5 one-to-one geometry F1.",
+    "vehicle_image": "Requires independent plate box and text ground truth. Same end-to-end inputs for all candidates; no detection counts as empty prediction. Report exact, CER, detector recall by size/layout/quality and mAP where labels suffice."
+  },
+  "promotion_rule": "On development, require higher end-to-end exact match and non-increasing CER at equivalent evaluation coverage. Freeze the winning candidate and recipe before one test run. Report paired per-image changes, source-group uncertainty, latency p50/p95, peak VRAM, and no deployment promotion from this experiment.",
+  "protected_protocols_unchanged": true
+}

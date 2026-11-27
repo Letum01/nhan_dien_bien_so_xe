@@ -1,0 +1,24 @@
+{
+  "status": "DRAFT_BLOCKED_REQUIRES_APPROVAL",
+  "version": 1,
+  "scope": "Separate small-scale study. No change to progressive 1000–15000+, its training threshold, or protected benchmark protocols.",
+  "arms": {
+    "baseline": "370 existing reviewed train glyphs, pinned by baseline370.json; verify its provenance against the new benchmark",
+    "add_external": [100, 300, 500],
+    "selection": "Nested train-only prefixes by intact verified source groups and unresolved duplicate components; report actual size or skip unreachable level. Do not count augmentations, repeated glyphs or source splits as independent sources. Viet verified is the primary domain; foreign/chart/synthetic require an explicitly separate approved ablation; ambiguous and invalid are excluded."
+  },
+  "gates": [
+    "Accountable approval binding this protocol and frozen manifest by hash before fitting.",
+    "Written rights covering exact archive and all contributor sources for intended training; separate evaluation and distribution rights.",
+    "Per-glyph confirmed class and usable crop plus source/domain evidence; visual Vietnamese appearance alone is not provenance.",
+    "Freeze train/development/test and compare against external, baseline and checkpoint training provenance; no verified group, full SHA256, unresolved pHash or crop-level conflicts; no Pilot/New10/Final Test use for model choice.",
+    "Same approved, independently sourced development cohort across sizes, feature choices and fixed detector boxes. Keep final test sealed. If vehicle-level independence is unknown, disclose it and do not waive existing eligibility gates.",
+    "Only run a level when sufficient eligible new train glyphs remain after group/leakage checks; zero currently eligible."
+  ],
+  "experiments": {
+    "cnn": "Use a copy of a provenance-verified V1 extractor, with a frozen backbone and trainable character head first. Compare matched baseline and augmented arms at the same recipe; fine-tune late layers at lower LR as a separate matched ablation after protocol approval. Keep 32x32 preprocessing identical to checkpoint contract; log optimizer, LR, checkpoint origin, epochs, early stopping and seed 42. No changes to V1 weights.",
+    "svm_rf": "Use HOG 324 + frozen CNN V1 embedding 256 (fusion 580). Fit scaler only on training fold; group-aware folds; keep mean sample weight 1 and fixed hyperparameters per matched size arm. Report shared-extractor provenance, not independent CV when groups overlap its training."
+  },
+  "metrics": "Glyph accuracy, macro F1, class support/recall, confusion matrix and runtime with group-level uncertainty. Exact plate match and CER only with independently verified full text on the same fixed end-to-end cohort and unchanged detector; missing detections count as empty predictions. Do not pick on final test.",
+  "implementation": "Protocol only. No pilot fitting CLI or output manifest approved. Do not invoke the progressive runner using sub-minimum levels."
+}

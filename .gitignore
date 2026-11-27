@@ -1,0 +1,43 @@
+# Virtual Environment (Rác cực kỳ nặng - không đưa lên GitHub)
+venv/
+.venv/
+.venv*/
+env/
+ENV/
+
+# Python Cache & Bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Cấu hình IDE cá nhân
+.vscode/
+.idea/
+
+# File môi trường và dữ liệu nhạy cảm
+.env
+data/
+.pytest_cache/
+/.streamlit/secrets.toml
+.env.*
+!.env.example
+*.sqlite3
+*.sqlite3-*
+*.db
+*.zip
+*.pt
+*.pth
+*.keras
+*.joblib
+*.log
+/runs/
+/experiments/
+/reports/*
+!/reports/ALPR_CLEAN_CODE_REPORT.md
+/dataset/
+/datasets/
+/saved_models/
+/pretrained/
+/debug_outputs*/
+/external_datasets/

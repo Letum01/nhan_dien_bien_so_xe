@@ -1,0 +1,11 @@
+{
+  "epochs": 100,
+  "imgsz": 640,
+  "batch": 4,
+  "device": "0",
+  "patience": 20,
+  "seed": 42,
+  "workers": 2,
+  "amp": true,
+  "notes": "PLANNED ONLY. YOLOv8n pretrained initialization. BLOCKED until expanded human-reviewed data, label audit and frozen-test leakage validator PASS. Start batch4 on RTX2060 6GB; batch8 only after VRAM check. No test threshold tuning."
+}

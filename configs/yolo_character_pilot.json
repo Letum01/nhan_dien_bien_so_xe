@@ -1,0 +1,22 @@
+{
+  "imgsz": 640,
+  "batch": 4,
+  "epochs": 100,
+  "patience": 20,
+  "seed": 42,
+  "workers": 2,
+  "device": 0,
+  "amp": true,
+  "deterministic": true,
+  "degrees": 5.0,
+  "translate": 0.03,
+  "scale": 0.12,
+  "perspective": 0.0002,
+  "hsv_v": 0.15,
+  "hsv_h": 0.0,
+  "hsv_s": 0.0,
+  "fliplr": 0.0,
+  "flipud": 0.0,
+  "mosaic": 0.0,
+  "mixup": 0.0
+}

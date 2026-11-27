@@ -1,0 +1,6 @@
+# Separate .venv-yolo. Install CUDA torch/torchvision via official cu121 index first.
+ultralytics==8.3.40
+numpy==1.26.4
+opencv-python==4.11.0.86
+pandas==2.2.3
+scikit-image==0.24.0

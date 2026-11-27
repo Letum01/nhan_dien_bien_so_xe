@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "authorization": "Explicit usage permission is checked separately for fitting, evaluation and redistribution. Unknown means not eligible for the corresponding use.",
+  "tasks": {
+    "CLASSIFIER_ELIGIBLE": "A verified single glyph with correct class, usable crop and no content conflict; parent completeness and full text are not required. Group and split must be verified. Domains are reported separately.",
+    "CHARACTER_DETECTION_ELIGIBLE": "Verified complete character coverage across the image, no extra or duplicate box, and no chart. Use one class character first. Missing class coverage, box errors and all rows still require a semantic review of the dataset, not classifier confidence.",
+    "FULL_PLATE_EVALUATION_ELIGIBLE": "Exact verified full plate text, known image/crop scope, verified group, independent frozen cohort and evaluation rights. Never derive truth merely from the OCR output or from sorting potentially incomplete boxes."
+  },
+  "benchmarks": {
+    "glyph_classification": "Verified individual glyph box/class, even if no full text; accuracy, macro F1 and per-class recall with support and confusion matrix; report domains separately.",
+    "character_detection": "Verified complete character boxes and valid reading order per plate; IoU >= 0.5 one-to-one F1, mAP50-95 and glyph count errors; report by rows and size.",
+    "plate_detection": "Verified vehicle-scene plate boxes, including valid negatives with verified absence; mAP50-95 and recall by plate size/layout/blur.",
+    "end_to_end": "Verified full text and scene/crop provenance, ordered reading, exact match and CER with missing detections counted as empty predictions; separate supplied-crop evaluation from scene inference."
+  },
+  "isolation": "Keep verified groups and unresolved duplicate components in a single split. Check full-image and plate-crop overlap. Never tune on Pilot/New10/Final Test. A hash component does not prove common identity or independence.",
+  "training_order": ["CNN CUDA 32x32", "SVM HOG, then feature fusion", "RF HOG, then feature fusion", "YOLO Character one class", "YOLO Plate after License_Data/VNLP pass their own gates"]
+}

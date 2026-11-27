@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "status": "REQUIRES_APPROVAL_BEFORE_FITTING",
+  "base_protocol": "configs/external_ocr_benchmark_protocol_v1.json",
+  "seed": 42,
+  "levels": [1000, 5000, 10000, 15000],
+  "baseline": "370 existing reviewed train glyphs; separate historical/cohort control, not the first prefix of external data. Re-evaluate comparable checkpoints on the unchanged new benchmark only after its approval.",
+  "sampling": "Prefixes of indivisible connected source-group, image, SHA256 and duplicate-component units. Report actual sample count, group count, class distribution and overshoot. Do not mix protected data or automatically create independent source groups.",
+  "independence": "Document source-domain and capture provenance, exact SHA256, near-duplicate and plate-crop conflicts. If vehicle identity is unknown, do not call the benchmark vehicle-independent. This supplemental protocol does not waive the frozen benchmark gates or Pilot/New10/Final Test protocols.",
+  "comparison": "Use identical development IDs, crop, reading order, classifier settings and preprocessing across sizes within a track. No tuning on final test. Only evaluate exact and CER on a separate fixed verified plate-text cohort; no metric from partial glyph labels.",
+  "cnn": {"size": 32, "optimizer": "AdamW", "lr": 0.001, "batch": 32, "candidate_batches": [32,64,128], "epochs": 60, "patience": 10, "scheduler": "ReduceLROnPlateau", "amp": true, "device": "cuda:0", "no_flip": true},
+  "classical": {"features": ["HOG 324", "frozen CNN V1 embedding", "HOG + embedding"], "svm_kernels": ["linear", "rbf"], "scaler": "training fold only", "weights": "mean 1", "rf": {"n_estimators": 200, "max_depth": 24}},
+  "yolo_character": {"model": "YOLOv8n", "classes": ["character"], "requires_verified_complete_boxes": true, "exclude_partially_annotated_images": true},
+  "review": "Two queues; class-balanced glyph sample and image-level completeness sample. Risk/domain panels overlap and are deliberately enriched, not representative of corpus prevalence. Report denominators by stratum, inconclusive separately, and no population-wide error rate from the pooled sample."
+}

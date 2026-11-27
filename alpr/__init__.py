@@ -1,0 +1,1 @@
+"""Application adapters around the frozen ALPR inference implementation."""

@@ -1,6 +1,5 @@
 """Frozen CNN probes. Torch execution is isolated in the CUDA venv."""
 import json
-import subprocess
 import sys
 from pathlib import Path
 from time import perf_counter
@@ -9,10 +8,10 @@ import numpy as np
 
 from glyph_review import ROOT
 from yolo_character_dataset import sha
-from yolo_character_pipeline import WEIGHTS, PYTHON
+from yolo_character_pipeline import WEIGHTS
+from training_artifacts import resolve_artifact
 
-V2 = ROOT/'experiments/ocr_v2_200'
-V3 = ROOT/'experiments/ocr_v3_cuda_retry'
+V2 = resolve_artifact('experiments/ocr_v2_200')
 MODELS = {'v1': WEIGHTS['cnn']}
 
 

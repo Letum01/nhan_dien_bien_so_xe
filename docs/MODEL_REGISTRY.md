@@ -1,5 +1,16 @@
 # Model Registry
 
+## Runtime và research validation riêng
+
+`python runtime_validation.py` dùng `configs/runtime-inference.json`, chỉ cần năm
+checkpoint chính và CNN contract; tổng binary **23.612.029 byte**. Manifest này
+được lấy từ hash release đã kiểm chứng, không tự học hash của file bất kỳ.
+
+`final_ocr_dataset.check_protocol()` giữ nguyên hash/protocol nghiên cứu và vẫn
+đòi ba file đối chứng HOG cũ. Registry `runtime-assets.json` phía dưới tiếp tục là
+pack lịch sử đầy đủ để restore research, không phải minimum runtime.
+Không xóa vĩnh viễn đối chứng: test đã tạm giấu rồi khôi phục hash nguyên vẹn.
+
 Runtime: YOLO Plate Round2, Character Round1, CNN Mix V1, SVM Fusion, RF Fusion. Hash/bytes trong configs/runtime-assets.json.
 
 SVM Mix/RF Mix/scaler cũ không nạp runtime mặc định nhưng vẫn cần phục hồi để gate final_ocr_protocol xác minh baseline khóa. Không sửa protocol. Checkpoint chỉ khôi phục từ nguồn tin cậy có quyền sử dụng/chia sẻ; không tự download.

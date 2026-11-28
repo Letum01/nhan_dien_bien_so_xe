@@ -69,21 +69,22 @@ def check_final_conflicts(entry, group, references):
         raise ValueError(' '.join(messages)+' Kiểm tra ảnh/nguồn và dùng ảnh độc lập khác nếu trùng; không đổi group chỉ để vượt kiểm tra.')
 
 
-def exposure_index():
+def exposure_index(source_root=ROOT):
+    source_root=Path(source_root).resolve()
     known={}
     def add(path, label):
         key=relative_image(path)
         if key and key.startswith('dataset/license_plate_dataset/'):
             known.setdefault(key,set()).add(label)
-    detection=ReadOnlyStore(ROOT/'data/annotations.sqlite3').all_latest().values()
+    detection=ReadOnlyStore(source_root/'data/annotations.sqlite3').all_latest().values()
     groups={relative_image(r['image_path']):r.get('source_group','') or '' for r in detection}
     splits={relative_image(r['image_path']):r['split'] for r in detection}
     for r in detection: add(r['image_path'],'detection_registry:'+r['split'])
-    with (ROOT/'reports/round2_plan/candidates.csv').open(encoding='utf-8-sig',newline='') as f:
+    with (source_root/'reports/round2_plan/candidates.csv').open(encoding='utf-8-sig',newline='') as f:
         for row in csv.DictReader(f): add(row['image_path'],'round2_review_queue')
     excluded={'dataset_audit.json','ocr_test_provenance.json','final_test_new10_audit.json',AUDIT.name,PROTOCOL.name}
     for folder in ('reports','experiments','debug_outputs'):
-        for path in sorted((ROOT/folder).rglob('*.json')):
+        for path in sorted((source_root/folder).rglob('*.json')):
             if path.name in excluded or path.name.startswith('final_ocr_corpus_'):continue
             try: stack=[read(path)]
             except (OSError,ValueError):continue
@@ -93,23 +94,24 @@ def exposure_index():
                 elif isinstance(value,list):stack.extend(value)
                 elif isinstance(value,str) and 'license_plate_dataset' in value and value.lower().endswith(('.jpg','.jpeg','.png')):
                     p=Path(value)
-                    add(Path('dataset')/p if p.parts and p.parts[0]=='license_plate_dataset' else p,path.relative_to(ROOT).as_posix())
+                    add(Path('dataset')/p if p.parts and p.parts[0]=='license_plate_dataset' else p,path.relative_to(source_root).as_posix())
     index=[]
     for image,refs in sorted(known.items()):
-        path=ROOT/image
+        path=source_root/image
         if path.is_file():
             digest,p,shape=fingerprint(path)
             if shape:index.append({'image':image,'sha256':digest,'phash':f'{p:016x}','source_group':groups.get(image,''),'split':splits.get(image),'references':sorted(refs)})
     return index
 
 
-def audit_candidates(store_path=STORE, *, write=True):
+def audit_candidates(store_path=STORE, *, write=True, source_root=ROOT):
     from final_ocr_intake import registered
     check_protocol()
-    known=exposure_index(); rows=[]
-    candidates=read(ROOT/'reports/ocr_test_provenance.json')['candidates']+registered(store_path)
+    source_root=Path(source_root).resolve()
+    known=exposure_index(source_root); rows=[]
+    candidates=read(source_root/'reports/ocr_test_provenance.json')['candidates']+registered(store_path)
     for entry in candidates:
-        image=entry['image']; path=ROOT/image
+        image=entry['image']; path=source_root/image
         if path.is_file():digest,p,shape=fingerprint(path)
         else:digest,p,shape=None,None,None
         matches=conflicts(digest,p,None,known) if shape else []

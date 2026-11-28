@@ -13,7 +13,7 @@ from alpr.demo_ui import draw_ordered_boxes, show
 from demo_alpr_core import History, csv_bytes, decode
 from demo_fusion import FusionHeads, agreement, load_cnn
 from dual_yolo_client import ROOT
-from final_ocr_dataset import read
+from evaluation_summary import load_summary
 
 TITLE = 'HỆ THỐNG NHẬN DIỆN BIỂN SỐ XE — ALPR'
 METHOD = 'character_yolo'
@@ -48,22 +48,20 @@ def download(rows, name):
 
 
 def dashboard():
-    path = ROOT / 'experiments/yolo_character_round1/comparison/results.json'
     st.subheader('Validation — 12 biển development, crop YOLO Plate')
-    if not path.is_file():
-        st.info('Chưa có artifact validation cục bộ.')
+    try:
+        data = load_summary()
+    except (OSError, ValueError, KeyError) as exc:
+        st.info(f'Chưa có artifact đánh giá hợp lệ: {exc}')
         return
-    validation = read(path)['summary']['yolo']
-    rows = [{'Tách ký tự': method, 'Backend': backend, 'Exact': values['exact'], 'CER': values['cer']}
-            for method, metrics in validation.items()
-            for backend, values in metrics['ocr'].items()]
+    rows = [{'Model': name, 'Matched Glyph Accuracy': f"{v['matched_correct']}/{v['matched_total']}",
+             'Exact Plate Match': f"{v['exact']}/{data['images']}",
+             'CER': v['edits']/data['reference_characters'],
+             'Model SHA-256': v['checkpoint_sha256']} for name,v in data['models'].items()]
     st.dataframe(pd.DataFrame(rows), hide_index=True)
-    st.caption('Chỉ số trên 12 biển development đã dùng nhiều lần, không phải test độc lập.')
-    profile = ROOT / 'reports/dual_yolo_profile.json'
-    if profile.is_file():
-        data = read(profile)
-        st.json({key: data[key] for key in ('legacy_wall', 'cold', 'warm_cnn', 'warm_all') if key in data},
-                expanded=False)
+    st.caption(f"{data['images']} ảnh / {data['reference_characters']} ký tự tham chiếu. "
+               'Development regression đã dùng trong phát triển, không phải test độc lập. '
+               'Không phải độ chính xác của ảnh người dùng vừa upload.')
 
 
 def main():
@@ -71,11 +69,11 @@ def main():
     st.title(TITLE)
     st.caption('YOLO Plate + YOLO Character + CNN/SVM/RF Fusion • CUDA detector • một biển score cao nhất mỗi ảnh')
     mode = st.sidebar.radio('Chức năng', ['Ảnh đơn', 'So sánh thuật toán', 'Hàng loạt', 'Lịch sử', 'Đánh giá'])
-    history = History(os.environ.get('ALPR_DEMO_HISTORY', str(ROOT / 'data/alpr_demo_history.sqlite3')))
     if mode == 'Đánh giá':
         dashboard()
         return
     if mode == 'Lịch sử':
+        history = History(os.environ.get('ALPR_DEMO_HISTORY', str(ROOT / 'data/alpr_demo_history.sqlite3')))
         rows = history.search(st.text_input('Tìm tên ảnh hoặc biển số'))
         st.dataframe(rows)
         if rows:
@@ -117,7 +115,7 @@ def main():
         if progress:
             progress.progress((index + 1) / len(files))
     if save:
-        history.save(rows)
+        History(os.environ.get('ALPR_DEMO_HISTORY', str(ROOT / 'data/alpr_demo_history.sqlite3'))).save(rows)
     st.dataframe(rows, hide_index=True)
     download(rows, 'alpr-results.csv')
 

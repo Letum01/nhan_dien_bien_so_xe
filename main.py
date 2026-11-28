@@ -165,7 +165,6 @@ def end_to_end_pipeline(
     trace: Optional[Dict[str, Any]] = None,
     detector_type: str = "opencv",
     detector_weights: Optional[str] = None,
-    allow_research_ocr: bool = False,
 ) -> Tuple[str, np.ndarray, Optional[np.ndarray], List[np.ndarray]]:
     """
     Quy trình khép kín (End-to-End ALPR Pipeline):
@@ -175,7 +174,7 @@ def end_to_end_pipeline(
     4. Nhận diện ký tự bằng mô hình (OCR Classification).
     5. Vẽ hộp và ghi kết quả chuỗi ký tự nhận diện lên ảnh.
     """
-    if model_type not in ("svm", "rf", "cnn", "ensemble") and not (allow_research_ocr and model_type == "paddle"):
+    if model_type not in ("svm", "rf", "cnn", "ensemble"):
         raise ValueError("Product recognition supports only SVM, RF, CNN and Ensemble")
     if isinstance(image_path_or_bgr, (str, os.PathLike)):
         image = cv2.imread(image_path_or_bgr)
@@ -257,7 +256,7 @@ def end_to_end_pipeline(
     cv2.rectangle(annotated, (x, y), (x + w, y + h), (0, 255, 0), 3)
 
     required_models = ("svm", "rf", "cnn", "scaler") if model_type == "ensemble" else (model_type,)
-    if model_type != "paddle" and (models_dict is None or any(models_dict.get(key) is None for key in required_models)):
+    if models_dict is None or any(models_dict.get(key) is None for key in required_models):
         raise ValueError(f"Mô hình '{model_type}' không khả dụng")
 
     if not segmented or (detector_type in ('yolo','yolo_isolated') and not 6<=len(segmented)<=11):
@@ -272,7 +271,7 @@ def end_to_end_pipeline(
     if ocr.status == "error":
         raise RuntimeError(ocr.error)
     raw_text = ocr.raw_text
-    confidences = [token.get("score") for token in ocr.tokens] if model_type not in ("paddle", "ensemble") else None
+    confidences = [token.get("score") for token in ocr.tokens] if model_type != "ensemble" else None
     plate_text = ocr.text or ("UNKNOWN (Ensemble Disagreement)" if ocr.status == "uncertain" else "UNKNOWN (OCR Unreadable)")
     if trace is not None:
         trace.update({"raw_text": raw_text, "processed_text": plate_text,
@@ -285,34 +284,3 @@ def end_to_end_pipeline(
     # Preserve the established four-value API; callers needing raw OCR may
     # use recognize_characters(..., return_confidences=True) directly.
     return plate_text, annotated, plate_crop, char_images
-
-
-if __name__ == "__main__":
-    print("[1] Đang sinh tập dữ liệu huấn luyện ký tự...")
-    X_all_img, y_all = generate_synthetic_character_dataset(samples_per_class=100)
-
-    print(f"[2] Kích thước dữ liệu: {X_all_img.shape}, Số lớp: {len(np.unique(y_all))}")
-    print("[3] Chia tập Train/Test theo tỷ lệ 80/20 (Stratified)...")
-    X_train_img, X_test_img, y_train, y_test = train_test_split(
-        X_all_img, y_all, test_size=0.2, random_state=42, stratify=y_all
-    )
-
-    print("[4] Trích xuất đặc trưng HOG cho Train và Test set...")
-    X_train_hog = np.array([extract_hog_features(img.squeeze()) for img in X_train_img], dtype=np.float32)
-    X_test_hog = np.array([extract_hog_features(img.squeeze()) for img in X_test_img], dtype=np.float32)
-
-    models_dict = train_and_save_all_models(
-        X_train_img, y_train, X_train_hog,
-        save_dir="saved_models",
-        epochs=12,
-        batch_size=64
-    )
-
-    evaluate_models(models_dict, X_test_img, X_test_hog, y_test)
-
-    sample_img_path = os.path.join("dataset", "license_plate_dataset", "0", "images", "0402.jpg")
-    if os.path.exists(sample_img_path):
-        print(f"\n[5] Thử nghiệm End-to-End Pipeline trên ảnh: {sample_img_path}")
-        plate_text, _, _, chars = end_to_end_pipeline(sample_img_path, model_type="cnn", models_dict=models_dict)
-        print(f" -> Kết quả nhận diện biển số xe: {plate_text} (Tách được {len(chars)} ký tự)")
-

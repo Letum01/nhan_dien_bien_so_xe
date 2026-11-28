@@ -4,6 +4,16 @@ function Invoke-Checked($Program, [string[]]$Arguments) {
     & $Program @Arguments
     if ($LASTEXITCODE -ne 0) { throw "$Program failed (exit $LASTEXITCODE)" }
 }
+if ($env:ALPR_OCR_PYTHON -and $env:ALPR_YOLO_PYTHON) {
+    # Explicit existing interpreters are validated, not modified/reinstalled.
+    foreach ($python in @($env:ALPR_OCR_PYTHON, $env:ALPR_YOLO_PYTHON)) {
+        if (-not (Test-Path -LiteralPath $python)) { throw "Interpreter not found: $python" }
+        Invoke-Checked $python @('-m','pip','check')
+    }
+    Invoke-Checked $env:ALPR_OCR_PYTHON @('-c','import streamlit, tensorflow, sklearn; print(streamlit.__version__)')
+    Invoke-Checked $env:ALPR_YOLO_PYTHON @('-c','import torch, ultralytics; assert torch.cuda.is_available(); print(torch.cuda.get_device_name(0))')
+    exit 0
+}
 foreach ($folder in @('.venv', '.venv-yolo')) {
     if (-not (Test-Path -LiteralPath $folder)) {
         Invoke-Checked 'py' @('-3.11','-m','venv',$folder)

@@ -9,8 +9,9 @@ from validate_glyph_dataset import validate
 from yolo_character_dataset import validate as validate_character
 from yolo_character_dataset import sha
 from glyph_review import CLASSES
-REAL = ROOT/'reports/glyph_audit_20261125T145221295978Z/dataset'
-CHAR = ROOT/'datasets/yolo_character_round1'
+from training_artifacts import artifact_root, resolve_artifact
+REAL = resolve_artifact('reports/glyph_audit_20261125T145221295978Z/dataset')
+CHAR = resolve_artifact('datasets/yolo_character_round1')
 
 
 def put(path,data):path.write_text(json.dumps(data,ensure_ascii=False,indent=2),encoding='utf-8')
@@ -18,16 +19,18 @@ def put(path,data):path.write_text(json.dumps(data,ensure_ascii=False,indent=2),
 
 
 def prepare():
-    check_protocol(); validate(REAL); validate_character(CHAR)
+    check_protocol(); validate(REAL); validate_character(CHAR, source_root=artifact_root())
     exported={r['image_id']:r for r in read(REAL/'ocr_revisions.json') if r['split'] in ('train','val')}
     expected={r['review']['image_id']:r['review'] for r in read(CHAR/'manifest.json')['rows']}
     if exported!=expected:raise ValueError('Glyph snapshot and validated Character revisions differ')
-    a=audit_candidates(write=False)
+    # Do not reduce the original dynamic exposure inventory to a smaller static list.
+    # It requires the full research input pack; never silently waive this gate.
+    a=audit_candidates(resolve_artifact('data/final_ocr_test.sqlite3'), write=False, source_root=artifact_root())
     forbidden=[{**r,'source_group':r.get('metadata',{}).get('source_group','')} for r in a['rows']]
     forbidden.extend(r for r in a['known'] if r['split']=='test')
     for row in exported.values():
         if row['split']=='train':
-            d,p,shape=fingerprint(ROOT/row['image_path'])
+            d,p,shape=fingerprint(resolve_artifact(row['image_path']))
             if not shape or conflicts(d,p,row['source_group'],forbidden):raise ValueError('Test exposure conflict: '+row['image_path'])
     with (REAL/'characters.csv').open(encoding='utf-8-sig',newline='') as f:
         buckets={s:[] for s in ('train','validation')}

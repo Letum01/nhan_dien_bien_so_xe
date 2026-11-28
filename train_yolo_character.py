@@ -6,11 +6,12 @@ from time import perf_counter
 from pathlib import Path
 
 from glyph_review import ROOT
-from run_hard13_v2 import check_gate
+from annotation_gate import check_gate
 from yolo_character_dataset import ReadOnlyStore, sha, validate
+from training_artifacts import artifact_root, resolve_artifact
 
-PROTOCOL = ROOT/'reports/hard13_v2_protocol.json'
-PRETRAINED = ROOT/'pretrained/yolov8n.pt'
+PROTOCOL = resolve_artifact('reports/hard13_v2_protocol.json')
+PRETRAINED = resolve_artifact('pretrained/yolov8n.pt')
 CONFIG = ROOT/'configs/yolo_character_pilot.json'
 
 
@@ -18,9 +19,10 @@ def readiness(dataset, receipt=None):
     protocol=json.loads(PROTOCOL.read_text(encoding='utf-8'))
     for key in ('code_sha256','checkpoints_sha256'):
         for path,digest in protocol[key].items():
-            if sha(ROOT/path)!=digest:
+            resolved = (ROOT/path) if key == 'code_sha256' else resolve_artifact(path, digest)
+            if sha(resolved)!=digest:
                 raise ValueError(f'BLOCKED: hard13 frozen hash changed: {path}')
-    reviewed=ReadOnlyStore(ROOT/'data/ocr_glyphs.sqlite3').all_latest()
+    reviewed=ReadOnlyStore(resolve_artifact('data/ocr_glyphs.sqlite3')).all_latest()
     selected=check_gate(protocol,reviewed)
     if receipt is None:
         raise ValueError('BLOCKED: run frozen hard13 benchmark and supply its results JSON')
@@ -34,7 +36,7 @@ def readiness(dataset, receipt=None):
     by_id={r['image_id']:r for r in snapshot}
     if any(by_id.get(r['image_id'])!=r for r in selected):
         raise ValueError('BLOCKED: hard13 reviewed revisions differ from benchmark snapshot')
-    return validate(dataset)
+    return validate(dataset, source_root=artifact_root())
 
 
 def main():
@@ -52,6 +54,11 @@ def main():
     print(json.dumps(result,indent=2))
     if not args.train:
         return
+    # Preflight can validate a historical root by rebasing it, but Ultralytics
+    # must never receive an immutable backup YAML still pointing to the old root.
+    yaml_root=json.loads((args.dataset/'data.yaml').read_text(encoding='utf-8')).get('path')
+    if yaml_root != str(args.dataset.resolve()):
+        parser.error('Export a new writable dataset/YAML with its actual root before fitting; do not modify the historical snapshot')
     base=ROOT/'experiments'
     dst=args.output.resolve() if args.output else None
     if not dst or dst.parent!=base or dst.exists():

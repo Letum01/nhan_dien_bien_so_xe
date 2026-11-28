@@ -9,7 +9,7 @@ import cv2
 from dataset_validation import check_split_leakage
 
 
-def validate_dataset(root: Path):
+def validate_dataset(root: Path, source_root=None):
     root=Path(root).resolve()
     manifest=root/"manifest.json"
     if not manifest.is_file():
@@ -17,9 +17,10 @@ def validate_dataset(root: Path):
     data=json.loads(manifest.read_text(encoding="utf-8"))
     rows=data["rows"]
     from label_detection import ROOT, validate_annotation
+    source_root = Path(source_root) if source_root is not None else ROOT
     for row in rows:
-        validate_annotation(row)
-    check_split_leakage(rows,ROOT)
+        validate_annotation(row, source_root)
+    check_split_leakage(rows,source_root)
     counts={}
     for split in ("train","val","test"):
         files=sorted((root/"images"/split).glob("*"))

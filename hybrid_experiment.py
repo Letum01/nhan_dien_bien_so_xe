@@ -18,19 +18,21 @@ from sklearn.svm import SVC
 
 from dual_yolo_client import Worker
 from hybrid_features import MODELS, V2
-from multiclass_run import edit_distance
+from text_metrics import edit_distance
 from segmentation_benchmark import match_boxes, overlap_fraction
-from svm_recovery_audit import crop, image
-from train_ocr_v2 import CHAR, REAL, ROOT, CLASSES, hog, prepare, put, read, sha, weights
-from yolo_character_pipeline import PYTHON, WEIGHTS, normalize_glyph, order_boxes
+from image_regions import crop, image
+from fusion_dataset import CHAR, REAL, ROOT, CLASSES, hog, prepare, put, read, sha, weights
+from yolo_character_pipeline import WEIGHTS, normalize_glyph, order_boxes
+from training_artifacts import resolve_artifact
 
 SETS = {'fusion': ('hog', 'v1_embedding')}
 
 
 def collect(out):
+    sha_cached=sha(V2/'synthetic.npz')
     buckets,reviews=prepare()
     out.mkdir(exist_ok=False)
-    ref=ROOT/'experiments/yolo_character_round1/comparison/results.json'
+    ref=resolve_artifact('experiments/yolo_character_round1/comparison/results.json')
     syn=V2/'synthetic.npz'
     if read(V2/'synthetic_manifest.json')['arrays_sha256']!=sha(syn):raise ValueError('Synthetic snapshot changed')
     for file,digest in read(V2/'checkpoint_hashes.json').items():
@@ -57,7 +59,7 @@ def collect(out):
     with Worker() as worker:
         for row in reviews.values():
             if row['split']!='train':continue
-            im=image(ROOT/row['image_path']); p=worker.request('plate',im)
+            im=image(resolve_artifact(row['image_path'])); p=worker.request('plate',im)
             if not p['rows']:rejects.append({'image':row['image_id'],'reason':'plate miss'});continue
             from benchmark_crop_padding import padded_box
             b=padded_box(max(p['rows'],key=lambda r:r['score'])['bbox'],.15,im.shape); x,y=b[:2]
@@ -115,10 +117,10 @@ def run(out):
             **visualize(f,name,gt,syn,vg,y,out)}
     put(out/'distributions.json',desc)
     for version in ('v1',):
-        s=joblib.load(WEIGHTS['scaler'] if version=='v1' else V2/'scaler.joblib')
+        s=joblib.load(WEIGHTS['scaler'])
         h=features['hog'][eval_ids]
         for family in ('svm','rf'):
-            model_path=WEIGHTS[family] if version=='v1' else V2/f'{family}.joblib'
+            model_path=WEIGHTS[family]
             model=joblib.load(model_path); t=perf_counter();p=model.predict(s.transform(h) if family=='svm' else h)
             report[f'{family}_{version}']={**score(p,eval_ids,y,vg,vd,plates),'classifier_eval_ms':1000*(perf_counter()-t),'model_bytes':model_path.stat().st_size}
     expected=(8,4)
@@ -214,7 +216,6 @@ def visualize(f,name,gt,syn,vg,y,out):
 
 if __name__=='__main__':
     ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('output',type=Path);args=ap.parse_args();out=args.output.resolve()
-    sha_cached=sha(V2/'synthetic.npz')
     if not out.exists():
         collect(out)
     run(out)

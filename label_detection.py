@@ -7,10 +7,10 @@ import cv2
 ROOT = Path(__file__).resolve().parent
 
 
-def validate_annotation(row):
+def validate_annotation(row, source_root=ROOT):
     if not row.get("human_reviewed") or not row.get("source_group") or row.get("split") not in ("train", "val", "test"):
         raise ValueError("Human review, source_group and train/val/test split required")
-    image = cv2.imread(str(ROOT / row["image_path"]))
+    image = cv2.imread(str(Path(source_root) / row["image_path"]))
     if image is None:
         raise ValueError("Unreadable source image")
     height, width = image.shape[:2]

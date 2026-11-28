@@ -1,0 +1,282 @@
+{
+  "scope": "development regression; not independent or blind test",
+  "source_run_sha256": "830a06cf0a2e0d7b25dcba73085fad7f1f9ca9b2fa465f9eb3b9d9593b58d0e3",
+  "records": [
+    {
+      "sample_id": "407471b3e609013d40c7072cbe71fa7b145bea0773c86b4bc22c78f76f8fafed",
+      "image_sha256": "8a8e0d8d63b458858629c6166134ed0abce5955e19bc2bde1715dd5a87de9b31",
+      "reference_characters": 9,
+      "matched_total": 9,
+      "models": {
+        "cnn": {
+          "exact": false,
+          "edits": 1,
+          "matched_correct": 8
+        },
+        "svm_fusion": {
+          "exact": true,
+          "edits": 0,
+          "matched_correct": 9
+        },
+        "rf_fusion": {
+          "exact": false,
+          "edits": 1,
+          "matched_correct": 8
+        }
+      }
+    },
+    {
+      "sample_id": "ebc0bcea18d0dbdf229490c412ed56d891404f214bf08b174d6a68b119d71a95",
+      "image_sha256": "b257d95a7f56122c7be3505a17800629cccfd342f3af96641b26198f845c3609",
+      "reference_characters": 8,
+      "matched_total": 8,
+      "models": {
+        "cnn": {
+          "exact": true,
+          "edits": 0,
+          "matched_correct": 8
+        },
+        "svm_fusion": {
+          "exact": true,
+          "edits": 0,
+          "matched_correct": 8
+        },
+        "rf_fusion": {
+          "exact": true,
+          "edits": 0,
+          "matched_correct": 8
+        }
+      }
+    },
+    {
+      "sample_id": "286826fd7642badaebb2f9bfc87654087e09494d50731043154592db42d78e2a",
+      "image_sha256": "7b07f67eae8c087afc38f0665d3e730e967afed1ec4a5f93d6b384df38d75e7c",
+      "reference_characters": 8,
+      "matched_total": 8,
+      "models": {
+        "cnn": {
+          "exact": true,
+          "edits": 0,
+          "matched_correct": 8
+        },
+        "svm_fusion": {
+          "exact": true,
+          "edits": 0,
+          "matched_correct": 8
+        },
+        "rf_fusion": {
+          "exact": true,
+          "edits": 0,
+          "matched_correct": 8
+        }
+      }
+    },
+    {
+      "sample_id": "cdcc7296f373272cddba8a17aaed440a7802e0fe0d02157938542b4e6e428a71",
+      "image_sha256": "4d77678162865dc292949ad186cae6a8a34fc19539e04891edeb4c85bdad3b03",
+      "reference_characters": 8,
+      "matched_total": 8,
+      "models": {
+        "cnn": {
+          "exact": true,
+          "edits": 0,
+          "matched_correct": 8
+        },
+        "svm_fusion": {
+          "exact": true,
+          "edits": 0,
+          "matched_correct": 8
+        },
+        "rf_fusion": {
+          "exact": true,
+          "edits": 0,
+          "matched_correct": 8
+        }
+      }
+    },
+    {
+      "sample_id": "f1b06e8ab47b533367a29ddca28cfc1418a67b8d96352ec3ffe084f020e73b92",
+      "image_sha256": "9c99dedff2e284b2a237a000806bf200259f63e613fd84b55b6612e5c4a846e4",
+      "reference_characters": 8,
+      "matched_total": 7,
+      "models": {
+        "cnn": {
+          "exact": false,
+          "edits": 1,
+          "matched_correct": 7
+        },
+        "svm_fusion": {
+          "exact": false,
+          "edits": 1,
+          "matched_correct": 7
+        },
+        "rf_fusion": {
+          "exact": false,
+          "edits": 2,
+          "matched_correct": 7
+        }
+      }
+    },
+    {
+      "sample_id": "e96206a6c302760564aa842ab58d5c24262cefa29dd73269fe1ac6a973e1ce29",
+      "image_sha256": "214a2f3fab594fa10975af81840962312f9a2f2c0ee12310b04784b8d4d44402",
+      "reference_characters": 8,
+      "matched_total": 8,
+      "models": {
+        "cnn": {
+          "exact": true,
+          "edits": 0,
+          "matched_correct": 8
+        },
+        "svm_fusion": {
+          "exact": true,
+          "edits": 0,
+          "matched_correct": 8
+        },
+        "rf_fusion": {
+          "exact": true,
+          "edits": 0,
+          "matched_correct": 8
+        }
+      }
+    },
+    {
+      "sample_id": "71238df792864f5fd62cf6ea0ab9ed6fbf15428cf2a59344a982e9c7a4a3f9d2",
+      "image_sha256": "29c4fdb81ad8f19c6fe215deec1f93a4e34ef191f594fd4072f3694a669db3df",
+      "reference_characters": 8,
+      "matched_total": 8,
+      "models": {
+        "cnn": {
+          "exact": true,
+          "edits": 0,
+          "matched_correct": 8
+        },
+        "svm_fusion": {
+          "exact": true,
+          "edits": 0,
+          "matched_correct": 8
+        },
+        "rf_fusion": {
+          "exact": true,
+          "edits": 0,
+          "matched_correct": 8
+        }
+      }
+    },
+    {
+      "sample_id": "587d5ca760c95f85dd6fb6f28d16a40df86cca3721160c450766f6cc06b1012d",
+      "image_sha256": "e2c25c60b278aab53b19735d357e192df6faa1ba3e9db1043dcf103954e344b9",
+      "reference_characters": 9,
+      "matched_total": 9,
+      "models": {
+        "cnn": {
+          "exact": false,
+          "edits": 1,
+          "matched_correct": 8
+        },
+        "svm_fusion": {
+          "exact": false,
+          "edits": 1,
+          "matched_correct": 8
+        },
+        "rf_fusion": {
+          "exact": false,
+          "edits": 1,
+          "matched_correct": 8
+        }
+      }
+    },
+    {
+      "sample_id": "7b7c90e7d50eeacb9698021f62a79f4ad882c3c870b8f9c1ea5a66382bc4e847",
+      "image_sha256": "fe3d145674932bbb9243181fb58577d64ee83ace6325cdb2d38e1a71e7d707b9",
+      "reference_characters": 8,
+      "matched_total": 8,
+      "models": {
+        "cnn": {
+          "exact": false,
+          "edits": 1,
+          "matched_correct": 7
+        },
+        "svm_fusion": {
+          "exact": false,
+          "edits": 1,
+          "matched_correct": 7
+        },
+        "rf_fusion": {
+          "exact": false,
+          "edits": 1,
+          "matched_correct": 7
+        }
+      }
+    },
+    {
+      "sample_id": "c299b197b20aa7e1194bdaac2b2f60b2eb8c5564cfbf852ffc2d453ab4c1d484",
+      "image_sha256": "db29bf6cfd7c93216d609a439f59299d24572591530fe712948ad10cfa907d05",
+      "reference_characters": 9,
+      "matched_total": 9,
+      "models": {
+        "cnn": {
+          "exact": true,
+          "edits": 0,
+          "matched_correct": 9
+        },
+        "svm_fusion": {
+          "exact": true,
+          "edits": 0,
+          "matched_correct": 9
+        },
+        "rf_fusion": {
+          "exact": true,
+          "edits": 0,
+          "matched_correct": 9
+        }
+      }
+    },
+    {
+      "sample_id": "5b17c66c61b34018f984f711d47bca05200d3ac99ff9aee77cb9dcc792512515",
+      "image_sha256": "3b988b4dd3e205c4bea10c2500fc165345dedf316846283cc46425addccdd340",
+      "reference_characters": 8,
+      "matched_total": 8,
+      "models": {
+        "cnn": {
+          "exact": true,
+          "edits": 0,
+          "matched_correct": 8
+        },
+        "svm_fusion": {
+          "exact": false,
+          "edits": 1,
+          "matched_correct": 7
+        },
+        "rf_fusion": {
+          "exact": false,
+          "edits": 1,
+          "matched_correct": 7
+        }
+      }
+    },
+    {
+      "sample_id": "c89cf81edbbe8b0ebecb30f5b6749a1ac8829169e435fac69453b2943a0cc4bb",
+      "image_sha256": "52e7ecda36f80cb0d1ddf8a29bdfe45a881077473e685ef1422bf1bedb3d2c9e",
+      "reference_characters": 8,
+      "matched_total": 8,
+      "models": {
+        "cnn": {
+          "exact": true,
+          "edits": 0,
+          "matched_correct": 8
+        },
+        "svm_fusion": {
+          "exact": true,
+          "edits": 0,
+          "matched_correct": 8
+        },
+        "rf_fusion": {
+          "exact": true,
+          "edits": 0,
+          "matched_correct": 8
+        }
+      }
+    }
+  ]
+}

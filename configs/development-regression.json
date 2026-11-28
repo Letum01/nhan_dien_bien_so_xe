@@ -1,0 +1,31 @@
+{
+  "scope": "development regression; not independent or blind test",
+  "images": 12,
+  "reference_characters": 99,
+  "evidence_sha256": "995d58618048549a55d892226315bdf30286cd67c3dc54925390df114d537ee9",
+  "source": "Post-remediation fresh CUDA inference with reviewed validation ground truth",
+  "models": {
+    "cnn": {
+      "exact": 8,
+      "edits": 4,
+      "matched_correct": 95,
+      "matched_total": 98,
+      "checkpoint_sha256": "34e88fdfad393aa2bd0da1812e0cc96740a0aee1c61381064af3163a21072d42"
+    },
+    "svm_fusion": {
+      "exact": 8,
+      "edits": 4,
+      "matched_correct": 95,
+      "matched_total": 98,
+      "checkpoint_sha256": "3dd58e0bc674f201d8887f70d51808cce86ce234a8dda40f9a6bd2ba9aae2824"
+    },
+    "rf_fusion": {
+      "exact": 7,
+      "edits": 6,
+      "matched_correct": 94,
+      "matched_total": 98,
+      "checkpoint_sha256": "13b818f045d9b230d018065901d9dca1df778fe9b33eca2eafddabb87c4ff7cd"
+    }
+  },
+  "evidence_file": "development-regression-evidence.json"
+}

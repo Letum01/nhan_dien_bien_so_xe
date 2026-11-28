@@ -1,0 +1,85 @@
+{
+  "version": 1,
+  "provenance": "Binary hashes from verified release runtime-assets and frozen final_ocr_protocol; source bytes checked before capture",
+  "classes": "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+  "features": {
+    "hog": 324,
+    "embedding": 256,
+    "fusion": 580
+  },
+  "cnn_contract": "experiments/ocr_mix_experiment02_20261125T080339560263Z/cnn_mix/cnn_contract.json",
+  "artifacts": {
+    "experiments/yolo_round2_splitB_run01/weights/best.pt": {
+      "sha256": "b5c7261ec9db97878b276b7c02e853736b209110f9f59a068e84fcadd6d98cdd",
+      "bytes": 6230819
+    },
+    "experiments/yolo_character_round1/weights/best.pt": {
+      "sha256": "aff3e82866b3b0993fa6ea91d9dc3e420c165ccc4dc15be88e15d47bad4bdf2a",
+      "bytes": 6243619
+    },
+    "experiments/ocr_mix_experiment02_20261125T080339560263Z/cnn_mix/cnn_model.keras": {
+      "sha256": "34e88fdfad393aa2bd0da1812e0cc96740a0aee1c61381064af3163a21072d42",
+      "bytes": 8204189
+    },
+    "experiments/hybrid_features_01/svm_fusion.joblib": {
+      "sha256": "3dd58e0bc674f201d8887f70d51808cce86ce234a8dda40f9a6bd2ba9aae2824",
+      "bytes": 1785992
+    },
+    "experiments/hybrid_features_01/rf_fusion.joblib": {
+      "sha256": "13b818f045d9b230d018065901d9dca1df778fe9b33eca2eafddabb87c4ff7cd",
+      "bytes": 1147410
+    },
+    "experiments/ocr_mix_experiment02_20261125T080339560263Z/cnn_mix/cnn_contract.json": {
+      "sha256": "8fcd8de6adef80e5fee2eca582bccf438d1f6ca8db45c58261e982fba1b4b771",
+      "bytes": 852
+    },
+    "dual_yolo_worker.py": {
+      "sha256": "dfacf72517b17a367a3ef8f484b9822b2cc7ae2fc3e9683bb0276c94ae2ac938",
+      "bytes": 2394
+    },
+    "dual_yolo_pipeline.py": {
+      "sha256": "1c9e7aa04c9e05f65026c5485a3c2531a479dd7bbf520d5b37da7dc8cc16a83a",
+      "bytes": 2952
+    },
+    "dual_yolo_client.py": {
+      "sha256": "640372f4659a1b6de9ba568cdc765b48d923dc9fb9f1e2b59ddeffc16d24d704",
+      "bytes": 3402
+    },
+    "yolo_detector.py": {
+      "sha256": "f51a25c767dad4b97b86e200d75e8dc8c38295fe2b5e90d31d42b784e97d5bdd",
+      "bytes": 1583
+    },
+    "yolo_character_worker.py": {
+      "sha256": "f9b99e95576b5541938eb5b7611521542a90c2500607c93c9ecd71158db001f7",
+      "bytes": 1287
+    },
+    "yolo_character_pipeline.py": {
+      "sha256": "a37290bc2234da60ae3af10e37ad7340479379d4c312d8ab81a795f8bbf0331a",
+      "bytes": 6959
+    },
+    "segmentation.py": {
+      "sha256": "541f255fff67ed8781b823e96d2dc65197389b1cc69fed1632fa51060b925412",
+      "bytes": 10927
+    },
+    "segmentation_benchmark.py": {
+      "sha256": "20eb3746cc1623a0cb6c926d93934e4b9e201e1eba4de60c3afec9dc219029b5",
+      "bytes": 15164
+    },
+    "benchmark_crop_padding.py": {
+      "sha256": "962eb12d7dff3c270b1e72e31d0b6f4caca6e021c426fdd855f52f22a897b30f",
+      "bytes": 11421
+    },
+    "benchmark_yolo_character.py": {
+      "sha256": "9253d8f4e6cc519bd4818a42e3d1c6f06d0a1a7389d162465082d533c835f5c0",
+      "bytes": 5107
+    },
+    "dataset.py": {
+      "sha256": "be723816d4bf8482e9962a62910f89c7821496553b862f9c56ecd87de4e06af6",
+      "bytes": 7831
+    },
+    "ensemble_recognition.py": {
+      "sha256": "9ccc417727745da16a5606e19d99d2bf00556ffd5543dd18bb8b2daae3a9b4df",
+      "bytes": 5477
+    }
+  }
+}

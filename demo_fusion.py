@@ -6,7 +6,8 @@ import numpy as np
 
 from dataset import extract_hog_features
 from dual_yolo_pipeline import run
-from final_ocr_dataset import ROOT, check_protocol, read, sha
+from final_ocr_dataset import ROOT, read, sha
+from runtime_validation import validate_runtime, validate_fusion_head
 from yolo_character_pipeline import CLASSES, WEIGHTS
 
 FUSION = ('svm_fusion', 'rf_fusion')
@@ -16,7 +17,7 @@ def load_cnn():
     """Load only the verified CNN, not the historical HOG-only heads."""
     import tensorflow as tf
 
-    check_protocol()
+    validate_runtime()
     path = WEIGHTS['cnn']
     model = tf.keras.models.load_model(path, compile=False)
     def rescalers(layer):
@@ -37,18 +38,14 @@ class FusionHeads:
         import joblib
         import tensorflow as tf
 
-        check_protocol()
-        expected = read(ROOT/'reports/adaptive_score_probe.json')['head_hashes']
+        spec = validate_runtime()
         self.heads = {}
         for name in FUSION:
             path = ROOT/'experiments/hybrid_features_01'/f'{name}.joblib'
-            if sha(path) != expected[name]:
+            if sha(path) != spec['artifacts'][path.relative_to(ROOT).as_posix()]['sha256']:
                 raise ValueError(f'Checkpoint Fusion không khớp: {name}')
             head = joblib.load(path)
-            if (head['classes'] != list(CLASSES) or list(head['classifier'].classes_) != list(range(36))
-                    or head['classifier'].n_features_in_ != 580
-                    or (name == 'svm_fusion' and head['scaler'].n_features_in_ != 580)):
-                raise ValueError(f'Sai hợp đồng đặc trưng Fusion: {name}')
+            validate_fusion_head(head, name)
             self.heads[name] = head
         inner = cnn.layers[-1]
         self.embed = tf.keras.Model(inner.inputs, inner.get_layer('dense').output)

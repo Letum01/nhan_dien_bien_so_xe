@@ -15,10 +15,11 @@ from dataset import CHARACTER_CLASSES
 from ensemble_recognition import vote
 from main import recognize_characters
 from segmentation import segment_characters
+from training_artifacts import resolve_artifact
 
 ROOT=Path(__file__).resolve().parent
-BUNDLE=ROOT/'experiments/ocr_mix_bundle_20261125'
-FIRST=ROOT/'experiments/ocr_mix_experiment01_20261125T072726619780Z'
+BUNDLE=resolve_artifact('experiments/ocr_mix_bundle_20261125')
+FIRST=resolve_artifact('experiments/ocr_mix_experiment01_20261125T072726619780Z')
 
 
 def main():
@@ -34,7 +35,7 @@ def main():
         folder.mkdir()
         (folder/'preflight.json').write_text(json.dumps(gate,indent=2),encoding='utf-8')
         for filename in ('annotations.sqlite3','ocr_glyphs.sqlite3'):
-            with sqlite3.connect(ROOT/'data'/filename) as source,sqlite3.connect(folder/filename) as target:source.backup(target)
+            with sqlite3.connect(resolve_artifact(Path('data')/filename).as_uri()+'?mode=ro',uri=True) as source,sqlite3.connect(folder/filename) as target:source.backup(target)
     elif json.loads((folder/'preflight.json').read_text())['manifest_sha256']!=gate['manifest_sha256']:
         raise ValueError('Resume dataset changed')
     valrows=[r for r in meta['manifest'] if r['origin']=='reviewed_real' and r['split']=='validation']
@@ -58,7 +59,7 @@ def main():
         print('RESULT',name,results[name]['correct'],'/57',flush=True)
     if contracts['cnn_synthetic']['initial_weight_sha256']!=contracts['cnn_mix']['initial_weight_sha256']:
         raise ValueError('Paired CNN initial weights differ')
-    baseline=tf.keras.models.load_model(ROOT/'saved_models/cnn_model.keras',compile=False)
+    baseline=tf.keras.models.load_model(resolve_artifact('saved_models/cnn_model.keras'),compile=False)
     results['cnn_old_baseline']=metrics(expected,recognize_characters(chars,'cnn',{'cnn':baseline}),valrows)
     candidates={'svm':joblib.load(FIRST/'svm_mix/svm_model.joblib'),
                 'rf':joblib.load(FIRST/'rf_mix/rf_model.joblib'),
@@ -69,11 +70,11 @@ def main():
         results[name+'_mix']=metrics(expected,members[name],valrows)
     ensemble=vote(members)
     results['majority_candidates']={**metrics(expected,ensemble.raw_text,valrows),'uncertain_positions':ensemble.uncertain_positions}
-    originals=json.loads((Path(meta['real_source'])/'ocr_revisions.json').read_text(encoding='utf-8'))
+    originals=json.loads((resolve_artifact(meta['real_source'])/'ocr_revisions.json').read_text(encoding='utf-8'))
     plate_results=[]
     for row in originals:
         if row['split']!='val':continue
-        image=cv2.imread(str(ROOT/row['image_path']));x,y,w,h=row['plate_bbox'];crop=image[y:y+h,x:x+w]
+        image=cv2.imread(str(resolve_artifact(row['image_path'])));x,y,w,h=row['plate_bbox'];crop=image[y:y+h,x:x+w]
         trace={};seg=segment_characters(crop,trace=trace)
         predicted={name:recognize_characters([ch for ch,_ in seg],name,candidates) for name in ('svm','rf','cnn')}
         voted=vote(predicted)
@@ -103,11 +104,11 @@ def main():
         cv2.imwrite(str(output/(row['image_id'][:12]+'.png')),overlay)
     integrity={}
     for filename in ('annotations.sqlite3','ocr_glyphs.sqlite3'):
-        with sqlite3.connect(folder/filename) as old,sqlite3.connect(ROOT/'data'/filename) as now:
+        with sqlite3.connect(folder/filename) as old,sqlite3.connect(resolve_artifact(Path('data')/filename).as_uri()+'?mode=ro',uri=True) as now:
             integrity[filename]={t:old.execute('SELECT * FROM '+t+' ORDER BY 1').fetchall()==now.execute('SELECT * FROM '+t+' ORDER BY 1').fetchall() for t in ('revisions','drafts')}
             if not all(integrity[filename].values()):raise ValueError('Source annotations changed during experiment')
     for name,digest in meta['baseline_sha256'].items():
-        if sha(ROOT/'saved_models'/name)!=digest:raise ValueError('Baseline checkpoint changed')
+        if sha(resolve_artifact(Path('saved_models')/name))!=digest:raise ValueError('Baseline checkpoint changed')
     report={'experiment':str(folder),'preflight':gate,'contracts':contracts,'results':results,
             'segmentation_vs_reviewed':plate_results,'source_integrity':integrity,
             'members':members,'expected':expected,'validation_rows':valrows,

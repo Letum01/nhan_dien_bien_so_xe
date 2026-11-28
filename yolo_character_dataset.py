@@ -85,7 +85,15 @@ def validate(root, source_root=ROOT, *, verify_live=True):
     expected_yaml = {'path':str(root),'names':['character'],'nc':1,
                      **{s:f'images/{s}' for s in ('train','val','test') if counts[s]}}
     # JSON is a YAML-compatible subset, avoiding PyYAML in the OCR venv.
-    if json.loads((root/'data.yaml').read_text(encoding='utf-8'))!=expected_yaml:
+    actual_yaml = json.loads((root/'data.yaml').read_text(encoding='utf-8'))
+    # Immutable snapshots can carry the original absolute project path. Rebase
+    # only that root, retaining every split/class field and all pixel/hash checks.
+    if actual_yaml.get('path') != str(root):
+        from training_artifacts import resolve_artifact
+        if resolve_artifact(actual_yaml.get('path', '')) != root:
+            raise ValueError('Dataset YAML root does not resolve to supplied snapshot')
+        actual_yaml = {**actual_yaml, 'path': str(root)}
+    if actual_yaml!=expected_yaml:
         raise ValueError('Incorrect data.yaml paths or class mapping')
     images, labels, crop_rows, boxes = set(), set(), [], Counter()
     for entry in rows:

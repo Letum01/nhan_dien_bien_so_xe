@@ -20,9 +20,10 @@ from glyph_review import plates_from_detection
 from main import recognize_characters
 from ocr_mix_experiment import fit, load_bundle, sha
 from validate_glyph_dataset import validate
+from training_artifacts import artifact_root, resolve_artifact
 
 ROOT=Path(__file__).resolve().parent
-BUNDLE=ROOT/'experiments/ocr_mix_bundle_20261125'
+BUNDLE=resolve_artifact('experiments/ocr_mix_bundle_20261125')
 
 
 def preflight():
@@ -31,20 +32,21 @@ def preflight():
         raise ValueError('Approved dataset sizes changed')
     if sha(ROOT/'dataset.py')!=meta['generator_source_sha256']:
         raise ValueError('Synthetic generator source changed')
-    real=Path(meta['real_source'])
+    real=resolve_artifact(meta['real_source'])
     if sha(real/'characters.csv')!=meta['real_manifest_sha256']:raise ValueError('Real manifest changed')
     validated=validate(real)
     rows=list(csv.DictReader((real/'characters.csv').open(encoding='utf-8-sig',newline='')))
     originals=json.loads((real/'ocr_revisions.json').read_text(encoding='utf-8'))
-    ocr=AnnotationStore(ROOT/'data/ocr_glyphs.sqlite3').all_latest()
-    parents={r['image_id']:r for r in plates_from_detection(AnnotationStore(ROOT/'data/annotations.sqlite3'))}
+    from yolo_character_dataset import ReadOnlyStore
+    ocr=ReadOnlyStore(resolve_artifact('data/ocr_glyphs.sqlite3')).all_latest()
+    parents={r['image_id']:r for r in plates_from_detection(ReadOnlyStore(resolve_artifact('data/annotations.sqlite3')))}
     for row in originals:
         if ocr.get(row['image_id'])!=row:raise ValueError('Live OCR reviewed revision differs from approved export')
         parent=parents.get(row['image_id'])
         if not parent or any(parent[k]!=row[k] for k in ('detection_revision','plate_bbox','source_group','split','source_image_id')):
             raise ValueError('Detection parent differs')
-        if sha(ROOT/row['image_path'])!=row['source_image_id']:raise ValueError('Source image changed')
-    check_split_leakage(originals,ROOT)
+        resolve_artifact(row['image_path'], row['source_image_id'])
+    check_split_leakage(originals,artifact_root())
     group_splits={};pixel_splits={}
     for sample in meta['manifest']:
         prefix='synthetic' if sample['origin']=='generated_synthetic' else sample['split']
@@ -56,7 +58,7 @@ def preflight():
         if digest in pixel_splits and pixel_splits[digest]!=sample['split']:raise ValueError('Pixel leakage')
         pixel_splits[digest]=sample['split']
         if sample['origin']=='reviewed_real':
-            if sha(sample['source_path'])!=sample['source_file_sha256']:raise ValueError('Exported glyph changed')
+            resolve_artifact(sample['source_path'], sample['source_file_sha256'])
             if sample['group'] in group_splits and group_splits[sample['group']]!=sample['split']:raise ValueError('Group leakage')
             group_splits[sample['group']]=sample['split']
         elif sample.get('label_source')!='rendered character instruction, not OCR output':raise ValueError('Synthetic label provenance invalid')
@@ -66,7 +68,7 @@ def preflight():
     if not np.array_equal(sx,arrays['synthetic_x']) or not np.array_equal(sy,arrays['synthetic_y']):
         raise ValueError('Synthetic regeneration not identical')
     for name,digest in meta['baseline_sha256'].items():
-        if sha(ROOT/'saved_models'/name)!=digest:raise ValueError('Baseline weight changed')
+        resolve_artifact(Path('saved_models')/name, digest)
     return meta,arrays,{'status':'PASS','real_validator':validated,'generator_regeneration':'pixel/label identical',
                         'live_reviewed_parent_check':'PASS','source_group_hash_phash_leakage':'PASS',
                         'manifest_sha256':sha(BUNDLE/'manifest.json'),'synthetic':3600,'real_train':147,'real_validation':57,
@@ -98,7 +100,7 @@ def main():
     folder=ROOT/'experiments'/('ocr_mix_experiment01_'+stamp);folder.mkdir(exist_ok=False)
     (folder/'preflight.json').write_text(json.dumps(gate,indent=2),encoding='utf-8')
     for database in ('annotations.sqlite3','ocr_glyphs.sqlite3'):
-        source=ROOT/'data'/database
+        source=resolve_artifact(Path('data')/database)
         with sqlite3.connect(f'file:{source.as_posix()}?mode=ro',uri=True) as c,sqlite3.connect(folder/database) as target:c.backup(target)
     configs={'svm_synthetic':('svm','ocr_synthetic_only.json'),'svm_mix':('svm','ocr_mix_svm.json'),
              'rf_synthetic':('rf','ocr_synthetic_only.json'),'rf_mix':('rf','ocr_mix_rf.json')}
@@ -126,11 +128,11 @@ def main():
         loaded_checks[run]='PASS reload predictions, class mapping, HOG/scaler'
         print(run,results[run]['correct'],'/',len(expected),results[run]['accuracy'],flush=True)
     for name in ('svm','rf'):
-        model=joblib.load(ROOT/'saved_models'/(name+'_model.joblib'))
+        model=joblib.load(resolve_artifact(Path('saved_models')/(name+'_model.joblib')))
         values=features
-        if name=='svm':values=joblib.load(ROOT/'saved_models/hog_scaler.joblib').transform(features)
+        if name=='svm':values=joblib.load(resolve_artifact('saved_models/hog_scaler.joblib')).transform(features)
         predicted=[CHARACTER_CLASSES[int(i)] for i in model.predict(values)]
-        results[name+'_old_baseline']={**metrics(expected,predicted,valrows),'checkpoint':str(ROOT/'saved_models'/(name+'_model.joblib')),
+        results[name+'_old_baseline']={**metrics(expected,predicted,valrows),'checkpoint':str(resolve_artifact(Path('saved_models')/(name+'_model.joblib'))),
                                       'provenance':'Historical training membership not verified'}
     changes={}
     for name in ('svm','rf'):
@@ -138,10 +140,10 @@ def main():
         changes[name]={'improved_recall_classes':[c for c in CHARACTER_CLASSES if mix['per_class'][c]['support'] and mix['per_class'][c]['recall']>synthetic['per_class'][c]['recall']],
                        'decreased_recall_classes':[c for c in CHARACTER_CLASSES if mix['per_class'][c]['support'] and mix['per_class'][c]['recall']<synthetic['per_class'][c]['recall']]}
     for database in ('annotations.sqlite3','ocr_glyphs.sqlite3'):
-        with sqlite3.connect(folder/database) as before,sqlite3.connect(ROOT/'data'/database) as now:
+        with sqlite3.connect(folder/database) as before,sqlite3.connect(resolve_artifact(Path('data')/database).as_uri()+'?mode=ro',uri=True) as now:
             for table in ('revisions','drafts'):
                 assert before.execute('SELECT * FROM '+table+' ORDER BY 1').fetchall()==now.execute('SELECT * FROM '+table+' ORDER BY 1').fetchall()
-    for name,digest in meta['baseline_sha256'].items():assert sha(ROOT/'saved_models'/name)==digest
+    for name,digest in meta['baseline_sha256'].items():assert sha(resolve_artifact(Path('saved_models')/name))==digest
     report={'experiment':str(folder),'preflight':gate,'results':results,'recall_changes_mix_vs_synthetic':changes,
             'reload_checks':loaded_checks,'validation_rows':valrows,'expected':expected,
             'data_or_baseline_changed':False,'cnn_training':'NOT_REQUESTED_NOT_RUN','test':'ABSENT_NOT_EVALUATED',

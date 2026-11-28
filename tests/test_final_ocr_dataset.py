@@ -13,6 +13,9 @@ def test_replacement_preserves_original_and_rejects_duplicate(tmp_path, monkeypa
     from final_ocr_intake import upload, registered
     import final_ocr_dataset as final
 
+    # This unit test exercises registry writes with fixture pixels, not model assets.
+    # The real checkpoint/protocol gate is checked separately by CUDA regression.
+    monkeypatch.setattr(final, 'check_protocol', lambda: None)
     db=AnnotationStore(tmp_path/'test.sqlite3').path
     old=tmp_path/'old.png'
     assert cv2.imwrite(str(old),np.zeros((32,32,3),np.uint8))

@@ -1,12 +1,7 @@
-"""Shared OCR results; Paddle is isolated from the TensorFlow environment."""
+"""Shared OCR results for CNN / SVM / RF / ensemble backends."""
 from dataclasses import asdict, dataclass, field
-from functools import lru_cache
-import json
 import logging
-import os
 from pathlib import Path
-import subprocess
-import tempfile
 import time
 from typing import Any, Dict, List, Optional
 
@@ -32,30 +27,10 @@ class OCRResult:
         return asdict(self)
 
 
-def paddle_python() -> Path:
-    return Path(os.environ.get("ALPR_PADDLE_PYTHON", str(ROOT / ".venv-paddle" / "Scripts" / "python.exe")))
-
-
-def paddle_available() -> bool:
-    """Environment existence only; weights/runtime are validated on first use."""
-    return paddle_python().is_file()
-
-
-@lru_cache(maxsize=4)
-def paddle_client(python: str):
-    from paddle_client import PaddleClient
-    return PaddleClient(Path(python), ROOT / "paddle_worker.py")
-
-
-def _paddle_cached(encoded: bytes) -> Dict[str, Any]:
-    return paddle_client(str(paddle_python())).request(encoded)
-
-
 def recognize_crop(crop: np.ndarray, backend: str, models=None, segments=None) -> OCRResult:
     """Common crop interface; errors are explicit, never synthetic predictions.
 
     Confidence is a model score, not a calibrated plate-correctness probability.
-    Paddle raw text keeps punctuation/newlines; text only removes separators.
     """
     start = time.perf_counter()
     result = OCRResult(backend=backend)
@@ -74,19 +49,6 @@ def recognize_crop(crop: np.ndarray, backend: str, models=None, segments=None) -
                              for i, ch in enumerate(votes.raw_text)]
             result.timings["method"] = votes.method
             result.timings["members"] = votes.members
-        elif backend == "paddle":
-            if not paddle_available():
-                raise ImportError("Paddle environment missing; install requirements-paddle.txt in .venv-paddle")
-            ok, buffer = cv2.imencode(".png", crop)
-            if not ok:
-                raise ValueError("Could not encode crop")
-            data = _paddle_cached(buffer.tobytes())
-            result.timings = dict(data.get("timings", {}))
-            result.timings["encode_seconds"] = time.perf_counter() - start - result.timings.get("request_seconds", 0.0)
-            result.raw_text = data["raw_text"]
-            result.tokens = data["tokens"]
-            result.confidence = data.get("confidence")
-            result.text = "".join(ch for ch in result.raw_text.upper() if ch.isascii() and ch.isalnum())
         else:
             from main import recognize_characters
             from segmentation import segment_characters

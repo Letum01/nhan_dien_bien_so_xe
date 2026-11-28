@@ -35,6 +35,7 @@ data/
 /experiments/
 /reports/*
 !/reports/ALPR_CLEAN_CODE_REPORT.md
+!/reports/ALPR_DEEP_CLEAN_REPORT.md
 /dataset/
 /datasets/
 /saved_models/

@@ -1,20 +1,29 @@
-# Model Registry — cấu hình demo đã khóa
+# Model Registry
 
-| Vai trò | Đường dẫn tương đối từ workspace | Hợp đồng |
-|---|---|---|
-| YOLO Plate Round 2 | `experiments/yolo_round2_splitB_run01/weights/best.pt` | CUDA; conf 0,40; chọn box score cao nhất |
-| YOLO Character Round 1 | `experiments/yolo_character_round1/weights/best.pt` | CUDA; một lớp; conf 0,25 |
-| CNN Mix V1 | `experiments/ocr_mix_experiment02_20261125T080339560263Z/cnn_mix/cnn_model.keras` | Keras CPU; `cnn_contract.json` cùng thư mục; 32×32×1, rescale một lần |
-| SVM Mix | `experiments/ocr_mix_experiment01_20261125T072726619780Z/svm_mix/` | `svm_model.joblib` + `hog_scaler.joblib`, HOG 324 |
-| RF Mix | `experiments/ocr_mix_experiment01_20261125T072726619780Z/rf_mix/rf_model.joblib` | HOG 324, không áp scaler SVM |
-| SVM/RF Fusion | `experiments/hybrid_features_01/{svm_fusion,rf_fusion}.joblib` | HOG 324 rồi CNN dense 256; SVM dùng scaler đi kèm |
+Runtime: YOLO Plate Round2, Character Round1, CNN Mix V1, SVM Fusion, RF Fusion. Hash/bytes trong configs/runtime-assets.json.
 
-Class order: `0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ`. Hash baseline và các file inference nằm trong `reports/final_ocr_protocol.json`; hash hai đầu Fusion ở `reports/adaptive_score_probe.json` (`head_hashes`). Không tải trọng số từ nguồn không kiểm chứng; Keras/joblib chỉ đọc bản tin cậy.
-
-Khôi phục các artifact theo đúng đường dẫn từ bản sao được phép, gồm protocol, `cnn_contract.json` và các báo cáo dùng cho tab Đánh giá (`experiments/yolo_character_round1/comparison/results.json`, `reports/dual_yolo_profile.json`, tùy chọn `reports/alpr_demo_pilot.json`). Learning Center/cohort yêu cầu kho nguồn và manifest tương ứng; không phát hành các SQLite, ảnh hoặc archive riêng tư để làm bản clone tự chạy. `restore_assets.py` có chế độ dry-run, chỉ copy khi bật `--apply`, không ghi đè đích khác hash.
+SVM Mix/RF Mix/scaler cũ không nạp runtime mặc định nhưng vẫn cần phục hồi để gate final_ocr_protocol xác minh baseline khóa. Không sửa protocol. Checkpoint chỉ khôi phục từ nguồn tin cậy có quyền sử dụng/chia sẻ; không tự download.
 
 ```powershell
+# Trong project, thay <asset-pack> bằng bản sao được phép
+.\.venv\Scripts\python.exe restore_assets.py configs/runtime-assets.json '<asset-pack>' '.'
+# Sau dry-run thành công
+.\.venv\Scripts\python.exe restore_assets.py configs/runtime-assets.json '<asset-pack>' '.' --apply
 .\.venv\Scripts\python.exe -c "from final_ocr_dataset import check_protocol; check_protocol()"
 ```
 
-`START_ALPR.bat` kiểm tra hash và CUDA trước khi mở Fast V1. Không sửa protocol để chấp nhận checkpoint khác.
+Không overwrite đích khác hash. CNN cần cnn_contract.json; tab Đánh giá tùy chọn cần experiments/yolo_character_round1/comparison/results.json. Không cần SQLite review để inference.
+
+| Artifact | Bytes | SHA256 |
+|---|---:|---|
+| `experiments/yolo_round2_splitB_run01/weights/best.pt` | 6230819 | `b5c7261ec9db97878b276b7c02e853736b209110f9f59a068e84fcadd6d98cdd` |
+| `experiments/yolo_character_round1/weights/best.pt` | 6243619 | `aff3e82866b3b0993fa6ea91d9dc3e420c165ccc4dc15be88e15d47bad4bdf2a` |
+| `experiments/ocr_mix_experiment01_20261125T072726619780Z/svm_mix/svm_model.joblib` | 7283039 | `cdd6a43584486a3b4547f25119f4a27bf3f5f99acf110d685f3518dcd966afc0` |
+| `experiments/ocr_mix_experiment01_20261125T072726619780Z/svm_mix/hog_scaler.joblib` | 8359 | `e27e2e6f6436521b7d7b4b0d2fc7d0c72c86cde648a9bfa304367cdb3378a940` |
+| `experiments/ocr_mix_experiment01_20261125T072726619780Z/rf_mix/rf_model.joblib` | 28147609 | `c849de4f88a76159784685e5fe7664d63c7a2c2baaf9ed6e632d2024175c54fd` |
+| `experiments/ocr_mix_experiment02_20261125T080339560263Z/cnn_mix/cnn_model.keras` | 8204189 | `34e88fdfad393aa2bd0da1812e0cc96740a0aee1c61381064af3163a21072d42` |
+| `experiments/hybrid_features_01/svm_fusion.joblib` | 1785992 | `3dd58e0bc674f201d8887f70d51808cce86ce234a8dda40f9a6bd2ba9aae2824` |
+| `experiments/hybrid_features_01/rf_fusion.joblib` | 1147410 | `13b818f045d9b230d018065901d9dca1df778fe9b33eca2eafddabb87c4ff7cd` |
+| `experiments/ocr_mix_experiment02_20261125T080339560263Z/cnn_mix/cnn_contract.json` | 852 | `8fcd8de6adef80e5fee2eca582bccf438d1f6ca8db45c58261e982fba1b4b771` |
+| `reports/final_ocr_protocol.json` | 3151 | `865ca7d977b0615da890303628d4c23cbad6c48063d829538a7f892a3e22d59a` |
+| `reports/adaptive_score_probe.json` | 6105 | `428ab7d21593ca0be02a409244d6112e84356b0546d69f7790bbd7e1f9e41186` |

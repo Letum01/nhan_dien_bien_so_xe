@@ -13,7 +13,7 @@ from yolo_character_pipeline import WEIGHTS, PYTHON
 
 V2 = ROOT/'experiments/ocr_v2_200'
 V3 = ROOT/'experiments/ocr_v3_cuda_retry'
-MODELS = {'v1':WEIGHTS['cnn'], 'v2':V2/'cnn.keras', 'v3':V3/'robust.pt'}
+MODELS = {'v1': WEIGHTS['cnn']}
 
 
 def extract(name, pixels):
@@ -22,55 +22,38 @@ def extract(name, pixels):
     if pixels.dtype!=np.uint8 or pixels.ndim!=3 or pixels.shape[1:]!=(32,32):
         raise ValueError('Expected N×32×32 uint8')
     output={k:[] for k in ('pool','embedding','prediction')}
-    if name=='v3':
-        import torch
-        from ocr_v3_experiment import network
-        if not torch.cuda.is_available():raise RuntimeError('V3 requires CUDA')
-        net=network().cuda().eval()
-        net.load_state_dict(torch.load(path,map_location='cpu',weights_only=True))
-        torch.cuda.synchronize(); torch.cuda.reset_peak_memory_stats()
-        def batch(x):
-            with torch.inference_mode():
-                f=net[:12](torch.as_tensor(x,device='cuda')[:,None].float()/255)
-                e=f.flatten(1); p=net[-1](e).argmax(1)
-                return f.mean((2,3)).cpu().numpy(),e.cpu().numpy(),p.cpu().numpy(),f.permute(0,2,3,1).cpu().numpy()
-        mode=torch.cuda.get_device_name(); layers=['MaxPool2d[11]','Flatten[12]']; framework=torch.__version__
-    else:
-        import tensorflow as tf
-        net=tf.keras.models.load_model(path,compile=False)
-        inner=net.layers[-1]
-        fmap=[l for l in inner.layers if isinstance(l,tf.keras.layers.MaxPooling2D)][-1]
-        dense=[l for l in inner.layers if isinstance(l,tf.keras.layers.Dense)][-2]
-        scales=[l for l in inner.layers if isinstance(l,tf.keras.layers.Rescaling)]
-        if len(scales)!=1 or not np.isclose(scales[0].scale,1/255) or scales[0].offset!=0:
-            raise ValueError('Unexpected normalization')
-        probe=tf.keras.Model(inner.inputs,[fmap.output,dense.output,inner.outputs[0]])
-        def batch(x):
-            f,e,p=probe(x[...,None],training=False)
-            f=np.asarray(f)
-            return f.mean((1,2)),np.asarray(e),np.asarray(p).argmax(1),f
-        devices=tf.config.list_physical_devices('GPU'); mode='TensorFlow GPU visible' if devices else 'TensorFlow CPU'
-        layers=[fmap.name,dense.name]; framework=tf.__version__
+    import tensorflow as tf
+    net=tf.keras.models.load_model(path,compile=False)
+    inner=net.layers[-1]
+    fmap=[l for l in inner.layers if isinstance(l,tf.keras.layers.MaxPooling2D)][-1]
+    dense=[l for l in inner.layers if isinstance(l,tf.keras.layers.Dense)][-2]
+    scales=[l for l in inner.layers if isinstance(l,tf.keras.layers.Rescaling)]
+    if len(scales)!=1 or not np.isclose(scales[0].scale,1/255) or scales[0].offset!=0:
+        raise ValueError('Unexpected normalization')
+    probe=tf.keras.Model(inner.inputs,[fmap.output,dense.output,inner.outputs[0]])
+    def batch(x):
+        f,e,p=probe(x[...,None],training=False)
+        f=np.asarray(f)
+        return f.mean((1,2)),np.asarray(e),np.asarray(p).argmax(1),f
+    devices=tf.config.list_physical_devices('GPU'); mode='TensorFlow GPU visible' if devices else 'TensorFlow CPU'
+    layers=[fmap.name,dense.name]; framework=tf.__version__
     load=perf_counter()-tick
     warm=batch(pixels[:min(8,len(pixels))]); times=[]; samples=[]
-    if name!='v3' and not np.array_equal(warm[2],np.asarray(net(pixels[:8,...,None],training=False)).argmax(1)):
+    if not np.array_equal(warm[2],np.asarray(net(pixels[:8,...,None],training=False)).argmax(1)):
         raise ValueError('Probe disagrees with full checkpoint')
     for i in range(0,len(pixels),128):
         t=perf_counter(); p,e,y,_=batch(pixels[i:i+128]);times.append(perf_counter()-t)
         for key,value in zip(output,(p,e,y)):output[key].append(value)
-        if name=='v3' and i%1024==0:
-            s=subprocess.check_output(['nvidia-smi','-i','0','--query-gpu=utilization.gpu,memory.used,temperature.gpu','--format=csv,noheader,nounits'],text=True,timeout=5)
-            samples.append(list(map(int,s.strip().split(','))))
     latency=[]
     for _ in range(10):
         t=perf_counter();batch(pixels[:8]);latency.append(perf_counter()-t)
     meta={'checkpoint':str(path),'sha256':sha(path),'bytes':path.stat().st_size,'framework':framework,
-          'architecture':[(l.name,type(l).__name__,str(l.output.shape)) for l in inner.layers] if name!='v3' else str(net),
+          'architecture':[(l.name,type(l).__name__,str(l.output.shape)) for l in inner.layers],
           'layers':dict(zip(('pool_source','embedding'),layers)),'device':mode,'load_seconds_includes_framework_import':load,
           'glyphs_per_second_compute':len(pixels)/sum(times),'batch8_median_ms':1000*float(np.median(latency)),
           'gpu_samples_util_pct_used_mib_temp_c':samples,
-          'peak_reserved_bytes':torch.cuda.max_memory_reserved() if name=='v3' else None,
-          'peak_allocated_bytes':torch.cuda.max_memory_allocated() if name=='v3' else None,
+          'peak_reserved_bytes':None,
+          'peak_allocated_bytes':None,
           'preprocessing':'32x32 uint8 white-on-black; one /255; augmentation disabled; mean pooling is spatial'}
     return {**{k:np.concatenate(v) for k,v in output.items()},'maps':warm[3]},meta
 

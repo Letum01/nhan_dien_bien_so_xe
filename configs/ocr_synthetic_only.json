@@ -1,1 +1,0 @@
-{"variant":"synthetic_only","seed":42,"C":10,"gamma":"scale","n_estimators":100,"max_depth":20,"epochs":30,"batch":16,"learning_rate":0.001}

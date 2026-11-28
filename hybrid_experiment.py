@@ -17,16 +17,14 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVC
 
 from dual_yolo_client import Worker
-from hybrid_features import MODELS, V2, V3
+from hybrid_features import MODELS, V2
 from multiclass_run import edit_distance
 from segmentation_benchmark import match_boxes, overlap_fraction
 from svm_recovery_audit import crop, image
 from train_ocr_v2 import CHAR, REAL, ROOT, CLASSES, hog, prepare, put, read, sha, weights
 from yolo_character_pipeline import PYTHON, WEIGHTS, normalize_glyph, order_boxes
 
-SETS = {'hog':('hog',), 'v1_pool':('v1_pool',), 'v1_dense':('v1_embedding',),
-        'fusion':('hog','v1_embedding'), 'v2_dense':('v2_embedding',),
-        'v3_pool':('v3_pool',), 'v3_flat':('v3_embedding',)}
+SETS = {'fusion': ('hog', 'v1_embedding')}
 
 
 def collect(out):
@@ -37,7 +35,6 @@ def collect(out):
     if read(V2/'synthetic_manifest.json')['arrays_sha256']!=sha(syn):raise ValueError('Synthetic snapshot changed')
     for file,digest in read(V2/'checkpoint_hashes.json').items():
         if sha(V2/file)!=digest:raise ValueError('V2 checkpoint changed')
-    if sha(MODELS['v3'])!=read(V3/'training.json')['robust']['sha256']:raise ValueError('V3 checkpoint changed')
     put(out/'protocol.json',{'features':SETS,'seed':42,'synthetic':'First 50 per class from fixed V2 archive',
         'fit':'3 GroupKFold, synthetic fixed, domain 50/50 mean weight 1; detector variants grouped with originals',
         'selection':'For each feature set and model choose hyperparameters by mean fold macro F1 on GT holdout. No dev selection.',
@@ -102,7 +99,7 @@ def run(out):
     for name in MODELS:
         file=out/f'{name}_features.npz'
         if not file.exists():
-            subprocess.run([str(PYTHON) if name=='v3' else sys.executable,'-u',str(ROOT/'hybrid_features.py'),name,str(out)],check=True,cwd=ROOT)
+            subprocess.run([sys.executable,'-u',str(ROOT/'hybrid_features.py'),name,str(out)],check=True,cwd=ROOT)
         extraction=read(out/f'{name}_extract.json')
         if extraction['sha256']!=sha(MODELS[name]):raise ValueError('Stale feature extraction')
         with np.load(file,allow_pickle=False) as data:
@@ -117,7 +114,7 @@ def run(out):
             'constant':int((f[ix(d)].std(0)<1e-8).sum())} for d in np.unique(domains)},
             **visualize(f,name,gt,syn,vg,y,out)}
     put(out/'distributions.json',desc)
-    for version in ('v1','v2'):
+    for version in ('v1',):
         s=joblib.load(WEIGHTS['scaler'] if version=='v1' else V2/'scaler.joblib')
         h=features['hog'][eval_ids]
         for family in ('svm','rf'):
@@ -218,4 +215,6 @@ def visualize(f,name,gt,syn,vg,y,out):
 if __name__=='__main__':
     ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('output',type=Path);args=ap.parse_args();out=args.output.resolve()
     sha_cached=sha(V2/'synthetic.npz')
-    collect(out);run(out)
+    if not out.exists():
+        collect(out)
+    run(out)

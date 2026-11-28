@@ -7,9 +7,29 @@ import numpy as np
 from dataset import extract_hog_features
 from dual_yolo_pipeline import run
 from final_ocr_dataset import ROOT, check_protocol, read, sha
-from yolo_character_pipeline import CLASSES, normalize_glyph, segment
+from yolo_character_pipeline import CLASSES, WEIGHTS
 
 FUSION = ('svm_fusion', 'rf_fusion')
+
+
+def load_cnn():
+    """Load only the verified CNN, not the historical HOG-only heads."""
+    import tensorflow as tf
+
+    check_protocol()
+    path = WEIGHTS['cnn']
+    model = tf.keras.models.load_model(path, compile=False)
+    def rescalers(layer):
+        if isinstance(layer, tf.keras.layers.Rescaling):
+            yield layer
+        for child in getattr(layer, 'layers', ()):
+            yield from rescalers(child)
+    scales = list(rescalers(model))
+    if (model.input_shape != (None, 32, 32, 1) or model.output_shape != (None, 36)
+            or read(path.parent/'cnn_contract.json')['class_order'] != list(CLASSES)
+            or len(scales) != 1 or not np.isclose(scales[0].scale, 1/255) or scales[0].offset != 0):
+        raise ValueError('CNN input/output/rescaling mismatch')
+    return model
 
 
 class FusionHeads:
@@ -52,24 +72,24 @@ class FusionHeads:
         return texts
 
 
-def run_fusion(image, worker, models, get_heads, backend, method):
+def run_fusion(image, worker, cnn, get_heads, backend):
+    """Capture the exact normalized batch at the frozen pipeline boundary."""
+    from types import SimpleNamespace
+
     start = perf_counter()
     compare = backend == 'compare'
-    result = run(image, worker, models, 'all' if compare else 'cnn', method)
+    pixels = None
+
+    def capture(batch, *, training=False):
+        nonlocal pixels
+        pixels = batch[..., 0]
+        return cnn(batch, training=training)
+
+    result = run(image, worker, SimpleNamespace(cnn=capture), 'cnn')
     names = FUSION if compare else (backend,)
     texts = dict.fromkeys(names, '')
-    if result['glyph_boxes']:
-        x,y,w,h = result['plate']['crop_box']
-        crop = image[y:y+h,x:x+w]
-        if method == 'character_yolo':
-            glyphs = [normalize_glyph(crop[b:b+d,a:a+c]) for a,b,c,d in result['glyph_boxes']]
-        else:
-            # Replay the existing deterministic OpenCV pixel path, not raw box crops.
-            rows = segment(crop, method)
-            if [list(box) for _,box in rows] != result['glyph_boxes']:
-                raise ValueError('Fusion không khớp thứ tự box OpenCV')
-            glyphs = [g for g,_ in rows]
-        texts = get_heads().predict(glyphs, names, result['timings'])
+    if pixels is not None:
+        texts = get_heads().predict(pixels, names, result['timings'])
     result['text'] = {**result['text'],**texts} if compare else texts
     result['timings']['total'] = perf_counter()-start
     return result
@@ -77,7 +97,7 @@ def run_fusion(image, worker, models, get_heads, backend, method):
 
 def agreement(texts):
     """Counts only a comparable trio on the same ordered glyphs."""
-    names = ('cnn', *FUSION) if all(k in texts for k in FUSION) else ('cnn','svm','rf')
+    names = ('cnn', *FUSION)
     if not all(k in texts for k in names): return [], ()
     strings = [texts[k] for k in names]
     if len({len(s) for s in strings}) != 1: return [], ()

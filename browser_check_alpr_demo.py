@@ -22,14 +22,14 @@ def main():
             page.locator('input[type=file]'+('[multiple]' if isinstance(paths,list) else ':not([multiple])')).set_input_files(paths)
             page.get_by_role('button',name='Chạy nhận diện').click()
         upload(str(real));expect(page.get_by_role('heading',name='Chuỗi dự đoán')).to_be_visible(timeout=120000)
-        for label,key in [('SVM Fusion — thử nghiệm','svm_fusion'),('Random Forest Fusion — thử nghiệm','rf_fusion')]:
+        for label,key in [('SVM Fusion','svm_fusion'),('Random Forest Fusion','rf_fusion')]:
             page.get_by_test_id('stSelectbox').filter(has_text='Nhận dạng').get_by_role('combobox').click()
             page.get_by_role('option',name=label,exact=True).click()
             upload(str(real));expect(page.get_by_text(f'"{key}"',exact=True).first).to_be_visible(timeout=30000)
         page.get_by_text('So sánh thuật toán',exact=True).click()
         expect(page.get_by_role('heading',name='Chuỗi dự đoán')).to_be_hidden(timeout=30000)
         upload(str(real));expect(page.get_by_text('Đồng thuận là số phiếu',exact=False)).to_be_visible(timeout=90000)
-        for k in ('svm','rf','cnn','ensemble','svm_fusion','rf_fusion'):expect(page.get_by_text(f'"{k}"',exact=True).first).to_be_visible()
+        for k in ('cnn','svm_fusion','rf_fusion'):expect(page.get_by_text(f'"{k}"',exact=True).first).to_be_visible()
         page.get_by_text('Hàng loạt',exact=True).click();upload([str(real),str(bad),str(blank)])
         expect(page.get_by_text('broken.png:',exact=False)).to_be_visible(timeout=90000)
         with page.expect_download() as event:page.get_by_role('button',name='Tải CSV').click(timeout=90000)
@@ -37,7 +37,7 @@ def main():
         assert all(k in csv for k in ('14.jpg','broken.png','blank.png','Không thấy biển')),csv
         assert not page.get_by_test_id('stException').count()
         page.screenshot(path=ROOT/'reports/alpr_demo_browser.png');browser.close()
-    (ROOT/'reports/alpr_demo_browser.json').write_text(json.dumps({'single_real':'PASS','single_fusion':'PASS','compare_four':'PASS','compare_fusion':'PASS','batch_csv':'PASS','corrupt_file':'PASS','blank_large':'PASS'},indent=2))
+    (ROOT/'reports/alpr_demo_browser.json').write_text(json.dumps({'single_real':'PASS','single_fusion':'PASS','compare_trio':'PASS','batch_csv':'PASS','corrupt_file':'PASS','blank_large':'PASS'},indent=2))
 
 
 if __name__=='__main__':main()

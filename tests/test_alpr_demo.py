@@ -32,9 +32,3 @@ def test_edit_breakdown_and_missing_plate():
     assert edit_counts('ABC','ADC')=={'substitutions':1,'deletions':0,'insertions':0}
     assert edit_counts('ABC','')=={'substitutions':0,'deletions':3,'insertions':0}
     assert edit_counts('ABC','AXBCC')['insertions']==2
-
-
-def test_intake_date_does_not_pass_provenance_gate():
-    from quick_ocr_test import require_evaluation_evidence
-    with pytest.raises(ValueError,match='intake date'):
-        require_evaluation_evidence([{'image':'a.jpg','evidence':'\nNgày nhập\t26/11/2026 '}])

@@ -1,3 +1,5 @@
+/alpr-local-env.bat
+
 # Virtual Environment (Rác cực kỳ nặng - không đưa lên GitHub)
 venv/
 .venv/

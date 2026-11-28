@@ -2,6 +2,7 @@
 from functools import lru_cache
 from pathlib import Path
 import json
+import os
 import subprocess
 import tempfile
 
@@ -9,7 +10,7 @@ import cv2
 
 ROOT=Path(__file__).resolve().parent
 CHECKPOINT=ROOT/'experiments/yolo_round2_splitB_run01/weights/best.pt'
-PYTHON=ROOT/'.venv-yolo/Scripts/python.exe'
+PYTHON=Path(os.environ.get('ALPR_YOLO_PYTHON', ROOT/'.venv-yolo/Scripts/python.exe'))
 
 
 def available():

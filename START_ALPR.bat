@@ -1,7 +1,14 @@
 @echo off
 setlocal
 cd /d "%~dp0"
+rem Prefer environments installed for THIS folder over another machine's config.
+if exist ".venv\Scripts\python.exe" if exist ".venv-yolo\Scripts\python.exe" goto local
 if exist "alpr-local-env.bat" call "alpr-local-env.bat"
+goto configured
+:local
+set "ALPR_OCR_PYTHON=%~dp0.venv\Scripts\python.exe"
+set "ALPR_YOLO_PYTHON=%~dp0.venv-yolo\Scripts\python.exe"
+:configured
 if not defined ALPR_OCR_PYTHON set "ALPR_OCR_PYTHON=%~dp0.venv\Scripts\python.exe"
 if not defined ALPR_YOLO_PYTHON set "ALPR_YOLO_PYTHON=%~dp0.venv-yolo\Scripts\python.exe"
 if not exist "%ALPR_OCR_PYTHON%" goto missing

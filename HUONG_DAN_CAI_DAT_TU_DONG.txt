@@ -1,0 +1,104 @@
+HƯỚNG DẪN SỬ DỤNG CAI_DAT_VA_CHAY.bat
+====================================
+
+1. FILE NÀY LÀM GÌ?
+
+Bạn chỉ cần mở CAI_DAT_VA_CHAY.bat trong thư mục ALPR đã giải nén.
+Nó tự kiểm tra điều kiện, xác minh model, tạo hai môi trường Python,
+cài thư viện đúng phiên bản, kiểm tra dependency/CUDA và khởi động app.
+Không cần tự gõ từng lệnh pip hoặc kích hoạt venv.
+
+Đây là file điều phối: phải giữ nó cùng toàn bộ thư mục bàn giao.
+KHÔNG gửi riêng một file BAT rồi kỳ vọng nó tự tải toàn bộ dự án/model.
+File gọi setup_environment.ps1 và START_ALPR.bat có sẵn trong project.
+
+2. TRƯỚC KHI NHẤP ĐÚP
+
+- Windows 64-bit, Python 3.11 64-bit và Python Launcher đã cài.
+  Nguồn chính thức: https://www.python.org/downloads/windows/
+  Kiểm tra trong PowerShell: py -3.11 --version
+- Máy có GPU NVIDIA và driver hỗ trợ CUDA 12.1; nvidia-smi chạy được.
+  Bản hiện tại không có detector CPU và không dùng GPU Intel/AMD.
+- Có Internet và dung lượng trống: nên dự trù ít nhất 10 GB.
+- Có bộ checkpoint đúng hash, được cung cấp với quyền sử dụng phù hợp.
+  Pack source-only không có model thì chưa thể chạy nhận diện.
+- Giải nén ZIP hoàn toàn, ví dụ D:\ALPR. Không chạy bên trong ZIP.
+
+File không tự cài Python hay driver NVIDIA vào hệ thống, không yêu cầu
+tắt bảo mật toàn máy và không tải checkpoint không rõ quyền. Nếu thiếu
+điều kiện, file dừng với thông báo thay vì báo thành công giả.
+
+3. CÁCH CHẠY
+
+Bước 1: Mở thư mục ALPR đã giải nén.
+Bước 2: Nhấp đúp CAI_DAT_VA_CHAY.bat.
+Bước 3: Chờ tải/cài thư viện. Không đóng cửa sổ khi đang chạy.
+Bước 4: Khi Streamlit báo URL, mở trình duyệt tới:
+
+  http://localhost:8511
+
+Hoặc dùng PowerShell:
+
+  Set-Location 'D:\ALPR'
+  .\CAI_DAT_VA_CHAY.bat
+
+Thay D:\ALPR bằng thư mục thực tế. Thời gian cài phụ thuộc mạng/máy.
+Các file .venv và .venv-yolo được tạo tại máy nhận; không copy venv máy
+tác giả. Script dùng thư viện đã pin, không nâng cấp hàng loạt.
+
+4. CÁC LẦN SAU
+
+Mở START_ALPR.bat để vào app nhanh, không cần chạy cài đặt lại mỗi lần.
+Nếu mở lại CAI_DAT_VA_CHAY.bat, pip vẫn kiểm tra/cài theo requirements,
+có thể cần Internet; đây không phải chế độ offline.
+Giữ cửa sổ server mở khi dùng. Dừng bằng Ctrl+C ở cửa sổ server.
+Không chuyển thư mục sau khi đã tạo venv; nếu chuyển cần tạo lại môi trường.
+
+5. NẾU CÓ LỖI
+
+- Thiếu Python: cài Python 3.11 64-bit và Python Launcher rồi chạy lại.
+- Không nhận NVIDIA: kiểm tra nvidia-smi và driver từ nhà sản xuất.
+- Thiếu/sai hash model: xin đúng bộ model hợp lệ, giữ nguyên cấu trúc
+  experiments/... theo configs/runtime-inference.json. Không sửa hash.
+- pip lỗi mạng/không tìm package: lưu lỗi đầu tiên, kiểm tra mạng/Python;
+  không tự đổi TensorFlow, sklearn, torch hoặc Ultralytics.
+- CUDA unavailable: không bỏ kiểm tra để ép chạy; kiểm tra GPU/driver.
+- Cổng 8511 bận: nếu ALPR đã chạy thì mở URL, không khởi động lần hai.
+
+Nếu cần gửi lỗi, chụp lỗi đầu tiên trong cửa sổ cài đặt và thông tin
+Python/GPU; không sửa checkpoint hoặc manifest để bỏ qua kiểm tra.
+
+6. LƯU Ý KHI GỬI CHO NGƯỜI KHÁC
+
+Dùng prepare_handoff.ps1 để tạo pack gửi đi. Không gửi venv, .git,
+SQLite nghiên cứu, dataset hoặc alpr-local-env.bat cá nhân.
+Chỉ kèm model khi đã có quyền chia sẻ. Script cài không tự cấp quyền
+hoặc tải model thay người gửi. Không cần huấn luyện lại để chạy demo.
+
+Tạo pack source-only trong PowerShell tại thư mục dự án:
+
+  .\prepare_handoff.ps1 -Destination "$env:USERPROFILE\Desktop\ALPR_BAN_GIAO"
+
+Pack source-only KHÔNG có model. Người nhận cần model hợp lệ riêng.
+CHỈ khi đã xác minh quyền phân phối model cho người nhận, dùng thư mục
+đích mới với hai cờ sau:
+
+  .\prepare_handoff.ps1 -Destination "$env:USERPROFILE\Desktop\ALPR_DEMO" -IncludeModels -ConfirmModelSharingRights
+
+Cờ xác nhận không phải giấy phép. Script kiểm tra hash/kích thước model
+trước khi copy và tạo HANDOFF_MANIFEST.json. Nén thư mục bàn giao mới tạo,
+không nén toàn bộ project làm việc. Không gửi ảnh biển số riêng tư.
+
+Nếu PowerShell chặn script, chỉ bypass trong tiến trình gọi này:
+
+  powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\prepare_handoff.ps1 -Destination "$env:USERPROFILE\Desktop\ALPR_BAN_GIAO"
+
+Không cần tắt execution policy toàn máy. Không chạy trực tiếp trong ZIP.
+Model runtime tối thiểu có tổng binary khoảng 23,61 MB; không cần gửi
+các checkpoint đối chứng cũ cho giao diện. Nghiên cứu/training vẫn cần
+artifact riêng theo docs\TRAINING_AND_DATASET.md.
+
+Đây là quy trình cài tự động môi trường trên máy đáp ứng điều kiện,
+không phải EXE portable/offline và chưa được nghiệm thu trên mọi máy.
+Các metric dashboard là development regression 12 ảnh, không phải độ
+chính xác mọi ảnh upload hoặc independent test.

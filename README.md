@@ -4,6 +4,15 @@
 
 ## Windows
 
+**Cài và chạy trong một lần mở:** giải nén đầy đủ rồi mở `CAI_DAT_VA_CHAY.bat`.
+Xem `HUONG_DAN_CAI_DAT_TU_DONG.txt`. Cần Python 3.11, NVIDIA/driver và model
+hợp lệ trước; script tự cài môi trường/thư viện, không tự tải model.
+
+**Gửi cho máy khác:** xem [hướng dẫn cài và bàn giao](HUONG_DAN_CAI_DAT_TU_DONG.txt).
+Người nhận chạy `CAI_DAT_VA_CHAY.bat` lần đầu, sau đó `START_ALPR.bat`.
+Không gửi venv hoặc cấu hình interpreter cá nhân. Dùng `prepare_handoff.ps1`
+để copy có chọn lọc; model chỉ được kèm khi có quyền phân phối phù hợp.
+
 Python3.11, NVIDIA driver hỗ trợ CUDA12.1; RTX2060 6GB đã kiểm tra. Hai môi trường: `.venv` (Keras CPU/Streamlit/scikit-learn) và `.venv-yolo` (PyTorch CUDA/Ultralytics).
 
 ```powershell
@@ -15,7 +24,7 @@ Python3.11, NVIDIA driver hỗ trợ CUDA12.1; RTX2060 6GB đã kiểm tra. Hai 
 **Clone source chưa đủ chạy demo.** Khôi phục artifact tin cậy và được phép sử dụng theo [registry](docs/MODEL_REGISTRY.md), rồi:
 
 ```powershell
-.\.venv\Scripts\python.exe -c "from final_ocr_dataset import check_protocol; check_protocol()"
+.\.venv\Scripts\python.exe runtime_validation.py
 .\START_ALPR.bat
 ```
 
